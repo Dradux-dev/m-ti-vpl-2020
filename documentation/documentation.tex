@@ -1,0 +1,180 @@
+\documentclass[addpoints,11pt]{exam}
+\pagestyle{headandfoot}
+\usepackage{ngerman}
+%\usepackage{xltxtra}
+%\usepackage{xunicode}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[a4paper,vmargin={2cm,2cm},hmargin={1.5cm,1.5cm}]{geometry}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{graphicx} 
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{subfigure} 
+\usepackage[american]{circuitikz}
+\usetikzlibrary{positioning}
+%\usepackage{showframe}
+\usepackage{amsmath,amssymb,amsfonts, mathcmd}
+\usepackage{xcolor}           % farbiger Text
+\input kvmacros
+
+%Change group here!
+%\newcommand{\groupa}{}
+%\newcommand{\groupb}{}
+%
+%\ifdefined\groupa
+	%\newcommand{\thisgroup}{Gruppe A}
+%\else
+	%\newcommand{\thisgroup}{Gruppe B}
+%\fi
+
+\newcommand{\thislecture}{EES - Vertiefung PL (VPL)}
+\newcommand{\thistheme}{Hardware Acceleration (Hardwarebeschleunigung)}
+\newcommand{\thisexam}{Laborversuch 1 (Hausarbeiten)}
+\newcommand{\thisauthor}{Prof. Dr. Peter Gregorius}
+\newcommand{\thisdate}{02.04.2020}
+\newcommand{\thissemester}{SoSe 2020}
+
+\newboolean{solution}
+\newcommand{\loesung}[1]{%
+ \ifthenelse{\boolean{solution}}%
+ {{\bf L\"osung:}\\[1ex] #1 \vspace{1cm}}%
+ {}
+}
+
+\hqword{Aufgabe:}
+\hpword{Punkt(e):}
+\hsword{Erreicht:}
+\htword{\textbf{Summe}}
+\pointpoints{Punkt}{Punkte}
+
+\renewcommand\questionshook{\setlength{\itemsep}{80pt}}
+
+\header{\thislecture}{\thisexam}{\thisdate}
+\headrule
+\footer{}{Seite \thepage\ von \numpages}{}
+\coverfooter{\thisauthor}{}{Fachbereich VI}
+\coverfootrule
+
+\setboolean{solution}{true}
+
+\begin{document}
+
+\begin{coverpages}
+	
+	\setlength{\parskip}{10pt}
+	\setlength{\parindent}{0pt}
+	
+	\vspace{2cm}
+	\normalsize
+	\begin{tabularx}{\textwidth}{ p{13.75cm} | r }
+	    \toprule
+		\textbf{\thislecture}  & \multirow{4}{*}{\quad 
+		\includegraphics[width=2.5cm]{BilderPDF/beuth}} \\
+		\thisexam, \thisdate, \thissemester &  \\
+		\cline{1-1}
+		\emph{Thema:}  & \\
+		\thistheme &  \\
+		\bottomrule
+	\end{tabularx}
+	
+	\vspace{2cm}
+	\LARGE\textbf{Hinweis zur Durchführung der Laborversuche/Hausarbeiten}
+	
+\normalsize
+Die Skripte bzw. Literaturhinweise zu den Laborversuchen/Hausarbeiten werden in der Vorlesung bzw. online (Beuth Moodle) zur
+Verfügung gestellt. Es sollten ausschlie\ss lich aktuelle Skripte verwendet werden. Spezielle Hinweise
+zu einem Laborversuch/Hausarbeit sind am Anfang des entsprechenden Laborskripts zu finden.
+	
+\textbf{Ablauf}
+
+\begin{itemize}
+\item Die Laborversuche/Hausarbeiten sind derart konzeptioniert, dass diese innerhalb eines Labortermins bzw. einer definierten Abgabefrist, falls nicht anders angegeben, zu bearbeiten sind.
+\item Ein Laborversuch/Hausarbeit besteht aus Selbststudium, Versuchsvorbereitung, Versuchsdurchführung und einem Protokoll. Zur Versuchsvorbereitung gehört eine analytische Herleitung der angestrebten Realisierung bzw. Umsetzung. Diese sind in der Ausarbeitung vollständig zu dokumentieren. %Diese ist vor Versuchsbeginn dem begleitenden Laboringenieur und/oder dem Dozenten unaufgefordert vorzulegen. 
+\item Projekte/Laborversuche: Es sollen selbstständig Gruppen mit jeweils 2 Studierenden gebildet werden. 
+\item Hausarbeiten: Sind selbstständig zu bearbeiten. Lerngruppen sind empfohlen. 
+\item Das Laborprotokoll ist mit unterschriebenem Deckblatt 4 Wochen nach dem Versuch abzugeben. Es wird Ihnen das originale Latex-Dokument zur Verfügung gestellt. Dieses können Sie dann mit ihren Ausarbeitungen vervollständigen. Bei handschriftlichen Ausführungen versehen Sie bitte jedes Blatt mit Namen und Matrikelnummer und nummerieren Sie alle Blätter durch.
+\item Bei Quelltexten wie z.B. Python, Matlab-Code usw. ist auf eine erklärende Kommentierung zu achten. Ein Ablaufdiagramm oder andere graphische Methoden zur Erläuterung des eigenen Lösungsansatzes sind zu ergänzen.
+%\item Hinweise in Vorlesungen/Übungen sowie durch die Betreuer sind zu berücksichtigen.
+\end{itemize}
+
+Es sind alle Arbeits- und Ableitungsschritte zu dokumentieren. Lösungen ohne erkennbaren Lösungsweg oder kurzer Begründung, sowie durchgestrichene oder nicht lesbare Lösungen werden nicht gewertet. Bei zwei angegebenen Lösungen wird keine berücksichtigt. Bitte benutzen Sie keine roten oder grünen Stifte.
+
+	\vspace{2cm}
+	\hrule
+	\emph{Ab hier bitte keine Eintragungen vornehmen!}
+	
+	\vspace{2cm}
+
+\begin{tabularx}{\textwidth}{ p{6cm} | p{6cm} | p{4cm} }
+	    \toprule
+         Gruppenname: &  & \\
+         \cline{1-2}
+         Name, Vorname & Matrikelnummer & Testat \\
+         \hline
+          &  & Datum: \\
+             \hline
+          & &  Unterschrift:\\
+		\bottomrule
+	\end{tabularx}
+	
+\end{coverpages}
+
+\addtocounter{page}{1}
+%Redefine question apperance
+\qformat{\large\textbf{Aufgabe \thequestion} \hfill (\thepoints)}
+\renewcommand{\baselinestretch}{1.5}
+\setlength{\bigskipamount}{20pt}
+
+\section{Einleitung}  
+
+Die Organisation IEEE (\textit{\textbf{I}nstitute of \textbf{E}lectrical and \textbf{E}lectronics \textbf{E}ngineers}) Computer Society veröffentlicht jährlich die wichtigsten Trends in der Informatik, der Computer-Technik und der (Mikro-/Nano-) Elektronik. Ein allgemeingültiger Ansatz für einen generellen Trend in der Computer-, Netzwerk- und Kommunikationstechnik ist das Bandbreite-Latenz-Produkt (BPL).
+
+\begin{equation*}
+\text{BLP} = \text{Bandwidth} ~[Bit/s] \cdot \text{Latency} ~[s]
+\end{equation*}
+
+Einen etwas weitergeführten Ansatz in der technologischen Entwicklung für Halbleitertechnologien (= Basistechnologie!) findet sich in den Ausführungen der \textit{International Technology Roadmap for Semiconductors} (\url{http://www.itrs.net/reports.html}).
+\section{Aufgabenstellung}
+
+\subsection{Trends in der technologischen Entwicklung}
+
+Beschaffen Sie sich einen Überblick zu den technologischen Trends der letzten Jahre und reflektieren diese zu den Trends für das Jahr 2020. Führen Sie dazu eine Recherche durch. Beantworten Sie dazu folgende Fragen:
+
+\begin{itemize}
+		\item[a.)] Welche Technologien waren und sind für die letzten Jahre als Topthema aufgelistet?
+		 \item[b.)] Wie werden diese Themen in Förderprogrammen der Bundesregierung bzw. der Europäischen Union reflektiert. Welche Anstrengungen sind weltweit zu erkennen?
+		\item[c.)] Geben Sie einen Überblick zu dem Diskurs der technologischen Entwicklungen und der Gesellschaft. 
+\end{itemize}
+
+\subsection{Hardwarebeschleunigung}
+
+Die Hardwarebeschleunigung ist keine Erfindung bzw. Trend unserer Tage. In der Computer- als auch Netzwerktechnologie ist dieses Konzept jeher Antriebsfeder und Motivation für Neuentwicklungen. Ein Pionier - aber nicht der einzige - ist Gordon Moore. Er stellte den Zusammenhang von  \textbf{Komplexität} und die Entwicklung integrierter Schaltkreise her und formulierte eine Vorhersage zum Verlauf der technologischen Entwicklung für die kommenden Dekaden. 
+
+\begin{itemize}
+		\item[a.)] Machen Sie sich mit der Vorhersage von Gordon Moore vertraut. 
+		 \item[b.)] Wie reflektiert sich Komplexität $K$ in einer analytischen Betrachtung von Systemen? Welche mathematischen Aussagen können mit einer Komplexitätsanalyse gemacht werden? Geben Sie ein Beispiel!
+		\item[c.)] Was verbirgt sich hinter dem Postulat \glqq \textit{More than Moore}\grqq? Was bedeutet das für die Technische Informatik? 
+\end{itemize}
+
+\section{Hinweise zur Ausarbeitung}
+
+Die Ausführungen zu den einzelnen Aufgaben sollten sich auf maximal 10 Seiten beschränken. So kann eine Auflistung von Stichworten mit kurzer Kommentierung und Quellenangabe aufwendige textuelle Beschreibungen ersetzen. Auch Grafiken und Tabellen sind sehr gute Mittel zur Darstellung einfacher oder auch komplexer Zusammenhänge. 
+Nutzen Sie zudem die Chance - falls Sie mit LATEX noch nicht vertraut sind - einen wissenschaftlichen Bericht mit einem in der Wissenschaft weit verbreitetes Tool bzw. Skriptsprache zu erstellen. 
+
+\clearpage
+
+\section{Ausarbeitung}
+
+
+\subsection{Trends in der technologischen Entwicklung}
+
+
+\subsection{Hardwarebeschleunigung}
+
+
+
+\end{document}
+
