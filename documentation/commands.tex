@@ -1,0 +1,35 @@
+\newcommand{\thislecture}{EES - Vertiefung PL (VPL)}
+\newcommand{\thistheme}{Hardware Acceleration (Hardwarebeschleunigung)}
+\newcommand{\thisexam}{Laborversuch 1 (Hausarbeiten)}
+\newcommand{\thisauthor}{Prof. Dr. Peter Gregorius}
+\newcommand{\thisdate}{02.04.2020}
+\newcommand{\thissemester}{SoSe 2020}
+
+\newboolean{solution}
+\newcommand{\loesung}[1]{%
+ \ifthenelse{\boolean{solution}}%
+ {{\bf L\"osung:}\\[1ex] #1 \vspace{1cm}}%
+ {}
+}
+
+\hqword{Aufgabe:}
+\hpword{Punkt(e):}
+\hsword{Erreicht:}
+\htword{\textbf{Summe}}
+\pointpoints{Punkt}{Punkte}
+
+\renewcommand\questionshook{\setlength{\itemsep}{80pt}}
+
+\header{\thislecture}{\thisexam}{\thisdate}
+\headrule
+\footer{}{Seite \thepage\ von \numpages}{}
+\coverfooter{\thisauthor}{}{Fachbereich VI}
+\coverfootrule
+
+\setboolean{solution}{true}
+
+% globale Entfernung von Einrückung
+\setlength{\parindent}{0pt} 
+
+% Setzt den nachfolgenden Text rot
+\newcommand\todo[1]{\textcolor{red}{#1}} 
