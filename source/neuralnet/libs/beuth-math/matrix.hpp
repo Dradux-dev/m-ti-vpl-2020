@@ -13,9 +13,23 @@ namespace beuth {
         friend struct const_row_index;
         friend struct column_index;
         friend struct const_column_index;
+        friend struct each_row;
+        friend struct each_column;
 
         template <typename T>
         friend Matrix<T> operator+(const Matrix<T>&, const Matrix<T>&);
+
+        template <typename T>
+        friend Matrix<T> operator+(const Matrix<T>& lhs, const typename Matrix<T>::each_row& rhs);
+
+        template <typename T>
+        friend Matrix<T> operator+(const typename Matrix<T>::each_row& lhs, const Matrix<T>& rhs);
+
+        template <typename T>
+        friend Matrix<T> operator+(const Matrix<T>& lhs, const typename Matrix<T>::each_column& rhs);
+
+        template <typename T>
+        friend Matrix<T> operator+(const typename Matrix<T>::each_column& lhs, const Matrix<T>& rhs);
 
         struct row_index {
             Matrix<TDataType>& m;
@@ -65,6 +79,18 @@ namespace beuth {
             operator Matrix<TDataType>() const;
         };
 
+        struct each_row {
+            Matrix<TDataType>& m;
+
+            each_row(Matrix<TDataType>& m);
+        };
+
+        struct each_column {
+            Matrix<TDataType>& m;
+
+            each_column(Matrix<TDataType>& m);
+        };
+
         Matrix(std::size_t rows, std::size_t columns);
         Matrix(const Matrix&) = default;
         Matrix(Matrix&&) = default;
@@ -88,6 +114,18 @@ namespace beuth {
 
     template <typename TDataType>
     Matrix<TDataType> operator+(const Matrix<TDataType>& lhs, const Matrix<TDataType>& rhs);
+
+    template <typename TDataType>
+    Matrix<TDataType> operator+(const Matrix<TDataType>& lhs, const typename Matrix<TDataType>::each_row& rhs);
+
+    template <typename TDataType>
+    Matrix<TDataType> operator+(const typename Matrix<TDataType>::each_row& lhs, const Matrix<TDataType>& rhs);
+
+    template <typename TDataType>
+    Matrix<TDataType> operator+(const Matrix<TDataType>& lhs, const typename Matrix<TDataType>::each_column& rhs);
+
+    template <typename TDataType>
+    Matrix<TDataType> operator+(const typename Matrix<TDataType>::each_column& lhs, const Matrix<TDataType>& rhs);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Matrix::row_index
@@ -190,6 +228,22 @@ namespace beuth {
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    /// Matrix::each_row
+    //////////////////////////////////////////////////////////////////////////////////////////
+    template <typename TDataType>
+    Matrix<TDataType>::each_row::each_row(Matrix<TDataType>& m)
+      : m(m)
+    {}
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /// Matrix::each_column
+    //////////////////////////////////////////////////////////////////////////////////////////
+    template <typename TDataType>
+    Matrix<TDataType>::each_column::each_column(Matrix<TDataType>& m)
+      : m(m)
+    {}
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     /// Matrix
     //////////////////////////////////////////////////////////////////////////////////////////
     template <typename TDataType>
@@ -263,6 +317,26 @@ namespace beuth {
       for (std::size_t row = 0; row < lhs.rows; ++row) {
         for (std::size_t column = 0; column < lhs.columns; ++column) {
           result[row][column] = lhs[row][column] + rhs[row][column];
+        }
+      }
+
+      return std::move(result);
+    }
+
+    template <typename TDataType>
+    Matrix<TDataType> operator+(const Matrix<TDataType>& lhs, const typename Matrix<TDataType>::each_row& rhs) {
+      return std::move(rhs + lhs);
+    }
+
+    template <typename TDataType>
+    Matrix<TDataType> operator+(const typename Matrix<TDataType>::each_row& lhs, const Matrix<TDataType>& rhs) {
+      assert(rhs.rows == 1);
+      assert(lhs.columns == rhs.m.columns);
+
+      Matrix<TDataType> result(lhs.m.rows, lhs.m.columns);
+      for (std::size_t row = 0; row < rhs.m.rows; ++row) {
+        for (std::size_t column = 0; column < rhs.m.columns; ++column) {
+          result[row][column] = lhs.m[row][column] + rhs[0][column];
         }
       }
 
