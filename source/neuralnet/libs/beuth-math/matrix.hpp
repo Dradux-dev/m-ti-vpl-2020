@@ -31,6 +31,9 @@ namespace beuth {
         template <typename T>
         friend Matrix<T> operator+(const typename Matrix<T>::each_column& lhs, const Matrix<T>& rhs);
 
+        template <typename T>
+        friend Matrix<T> operator*(const Matrix<T>& lhs, const Matrix<T>& rhs);
+
         struct row_index {
             Matrix<TDataType>& m;
             std::size_t row;
@@ -126,6 +129,9 @@ namespace beuth {
 
     template <typename TDataType>
     Matrix<TDataType> operator+(const typename Matrix<TDataType>::each_column& lhs, const Matrix<TDataType>& rhs);
+
+    template <typename TDataType>
+    Matrix<TDataType> operator*(const Matrix<TDataType>& lhs, const Matrix<TDataType>& rhs);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Matrix::row_index
@@ -331,12 +337,55 @@ namespace beuth {
     template <typename TDataType>
     Matrix<TDataType> operator+(const typename Matrix<TDataType>::each_row& lhs, const Matrix<TDataType>& rhs) {
       assert(rhs.rows == 1);
-      assert(lhs.columns == rhs.m.columns);
+      assert(lhs.m.columns == rhs.columns);
 
       Matrix<TDataType> result(lhs.m.rows, lhs.m.columns);
-      for (std::size_t row = 0; row < rhs.m.rows; ++row) {
-        for (std::size_t column = 0; column < rhs.m.columns; ++column) {
+      for (std::size_t row = 0; row < lhs.m.rows; ++row) {
+        for (std::size_t column = 0; column < lhs.m.columns; ++column) {
           result[row][column] = lhs.m[row][column] + rhs[0][column];
+        }
+      }
+
+      return std::move(result);
+    }
+
+    template <typename TDataType>
+    Matrix<TDataType> operator+(const Matrix<TDataType>& lhs, const typename Matrix<TDataType>::each_column& rhs) {
+      return std::move(rhs + lhs);
+    }
+
+    template <typename TDataType>
+    Matrix<TDataType> operator+(const typename Matrix<TDataType>::each_column& lhs, const Matrix<TDataType>& rhs) {
+      assert(lhs.m.rows == rhs.rows);
+      assert(rhs.columns == 1);
+
+      Matrix<TDataType> result(lhs.m.rows, lhs.m.columns);
+      for (std::size_t row = 0; row < lhs.m.rows; ++row) {
+        for (std::size_t column = 0; column < lhs.m.columns; ++column) {
+          result[row][column] = lhs.m[row][column] + rhs[column][0];
+        }
+      }
+
+      return std::move(result);
+    }
+
+    template <typename TDataType>
+    Matrix<TDataType> operator*(const Matrix<TDataType>& lhs, const Matrix<TDataType>& rhs) {
+      assert(lhs.columns == rhs.rows);
+
+      Matrix<TDataType> result(lhs.rows, rhs.columns);
+
+      for (std::size_t row = 0; row < lhs.rows; ++row) {
+        for (std::size_t column = 0; column < rhs.columns; ++column) {
+          TDataType value = TDataType();
+
+          for (std::size_t pos = 0; pos < lhs.columns; ++pos) {
+            TDataType lhsv = lhs[row][pos];
+            TDataType rhsv = rhs[pos][column];
+            value += lhsv * rhsv;
+          }
+
+          result[row][column] = value;
         }
       }
 
