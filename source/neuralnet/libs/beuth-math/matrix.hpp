@@ -2,6 +2,9 @@
 
 #include <assert.h>
 #include <cstdint>
+#include <initializer_list>
+#include <iomanip>
+#include <iostream>
 #include <vector>
 
 namespace beuth {
@@ -33,6 +36,9 @@ namespace beuth {
 
         template <typename T>
         friend Matrix<T> operator*(const Matrix<T>& lhs, const Matrix<T>& rhs);
+
+        template <typename T>
+        friend std::ostream& operator<<(std::ostream& os, const Matrix<T>& m);
 
         struct row_index {
             Matrix<TDataType>& m;
@@ -83,15 +89,17 @@ namespace beuth {
         };
 
         struct each_row {
-            Matrix<TDataType>& m;
+            Matrix<TDataType> m;
 
-            each_row(Matrix<TDataType>& m);
+            each_row(const Matrix<TDataType>& m);
+            each_row(Matrix<TDataType>&& m);
         };
 
         struct each_column {
-            Matrix<TDataType>& m;
+            Matrix<TDataType> m;
 
-            each_column(Matrix<TDataType>& m);
+            each_column(const Matrix<TDataType>& m);
+            each_column(Matrix<TDataType>&& m);
         };
 
         Matrix(std::size_t rows, std::size_t columns);
@@ -105,9 +113,12 @@ namespace beuth {
         const_row_index operator[](std::size_t row) const;
 
         Matrix& operator=(Matrix&& m);
+        Matrix& operator=(const std::initializer_list<TDataType>& l);
 
         template <typename TOtherDataType>
         Matrix& operator=(const Matrix<TOtherDataType>& m);
+
+        static Matrix<TDataType> Transpose(const Matrix<TDataType>& m);
 
       protected:
         std::size_t rows;
@@ -132,6 +143,9 @@ namespace beuth {
 
     template <typename TDataType>
     Matrix<TDataType> operator*(const Matrix<TDataType>& lhs, const Matrix<TDataType>& rhs);
+
+    template <typename TDataType>
+    std::ostream& operator<<(std::ostream& os, const Matrix<TDataType>& m);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Matrix::row_index
@@ -237,15 +251,29 @@ namespace beuth {
     /// Matrix::each_row
     //////////////////////////////////////////////////////////////////////////////////////////
     template <typename TDataType>
-    Matrix<TDataType>::each_row::each_row(Matrix<TDataType>& m)
+    Matrix<TDataType>::each_row::each_row(const Matrix<TDataType>& m)
       : m(m)
-    {}
+    {
+      std::cout << "copy" << std::endl;
+    }
+
+    template <typename TDataType>
+    Matrix<TDataType>::each_row::each_row(Matrix<TDataType>&& m)
+      : m(m)
+    {
+      std::cout << "move" << std::endl;
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Matrix::each_column
     //////////////////////////////////////////////////////////////////////////////////////////
     template <typename TDataType>
-    Matrix<TDataType>::each_column::each_column(Matrix<TDataType>& m)
+    Matrix<TDataType>::each_column::each_column(const Matrix<TDataType>& m)
+      : m(m)
+    {}
+
+    template <typename TDataType>
+    Matrix<TDataType>::each_column::each_column(Matrix<TDataType>&& m)
       : m(m)
     {}
 
@@ -298,6 +326,28 @@ namespace beuth {
     }
 
     template <typename TDataType>
+    Matrix<TDataType>& Matrix<TDataType>::operator=(const std::initializer_list<TDataType>& l) {
+      std::size_t row = 0;
+      std::size_t column = 0;
+
+      for (const TDataType& value : l) {
+        (*this)[row][column] = value;
+
+        ++column;
+        if (column == columns) {
+          column = 0;
+          ++row;
+
+          if (row == rows) {
+            break;
+          }
+        }
+      }
+
+      return *this;
+    }
+
+    template <typename TDataType>
     template <typename TOtherDataType>
     Matrix<TDataType>& Matrix<TDataType>::operator=(const Matrix<TOtherDataType>& m) {
       assert(rows == m.rows);
@@ -308,6 +358,19 @@ namespace beuth {
           data[row][column] = static_cast<TDataType>(m[row][column]);
         }
       }
+    }
+
+    template <typename TDataType>
+    Matrix<TDataType> Matrix<TDataType>::Transpose(const Matrix<TDataType>& m) {
+      Matrix<TDataType> result(m.columns, m.rows);
+
+      for (std::size_t row = 0; row < m.rows; ++row) {
+        for (std::size_t column = 0; column < m.columns; ++column) {
+          result[column][row] = m[row][column];
+        }
+      }
+
+      return std::move(result);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -390,6 +453,19 @@ namespace beuth {
       }
 
       return std::move(result);
+    }
+
+    template <typename TDataType>
+    std::ostream& operator<<(std::ostream& os, const Matrix<TDataType>& m) {
+      for (std::size_t row = 0; row < m.rows; ++row) {
+        for (std::size_t column = 0; column < m.columns; ++column) {
+          os << std::setw(6) << std::setprecision(2) << std::setfill(' ') << m[row][column];
+        }
+
+        os << std::endl;
+      }
+
+      return os;
     }
   }
 }
