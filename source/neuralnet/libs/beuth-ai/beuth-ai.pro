@@ -21,7 +21,8 @@ SOURCES += \
 
 HEADERS += \
     beuth-ai_global.h \
-    beuthai.h
+    beuthai.h \
+    neuralnetwork.h
 
 # Default rules for deployment.
 unix {

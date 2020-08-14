@@ -113,6 +113,7 @@ namespace beuth {
         const_row_index operator[](std::size_t row) const;
 
         Matrix& operator=(Matrix&& m);
+        Matrix& operator=(const Matrix& m);
         Matrix& operator=(const std::initializer_list<TDataType>& l);
 
         template <typename TOtherDataType>
@@ -326,6 +327,15 @@ namespace beuth {
     }
 
     template <typename TDataType>
+    Matrix<TDataType>& Matrix<TDataType>::operator=(const Matrix<TDataType>& m) {
+      assert(rows == m.rows);
+      assert(columns == m.columns);
+
+      data = m.data;
+      return *this;
+    }
+
+    template <typename TDataType>
     Matrix<TDataType>& Matrix<TDataType>::operator=(const std::initializer_list<TDataType>& l) {
       std::size_t row = 0;
       std::size_t column = 0;
@@ -459,7 +469,7 @@ namespace beuth {
     std::ostream& operator<<(std::ostream& os, const Matrix<TDataType>& m) {
       for (std::size_t row = 0; row < m.rows; ++row) {
         for (std::size_t column = 0; column < m.columns; ++column) {
-          os << std::setw(6) << std::setprecision(2) << std::setfill(' ') << m[row][column];
+          os << std::setw(10) << std::setprecision(2) << std::setfill(' ') << m[row][column];
         }
 
         os << std::endl;
