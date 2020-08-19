@@ -3,7 +3,7 @@ QT -= gui
 TEMPLATE = lib
 DEFINES += BEUTHMATH_LIBRARY
 
-CONFIG += c++11
+CONFIG += c++20
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -22,7 +22,10 @@ SOURCES += \
 HEADERS += \
     beuth-math_global.h \
     beuthmath.h \
-    matrix.hpp
+    binary.hpp \
+    linear.hpp \
+    matrix.hpp \
+    non-linear.hpp
 
 # Default rules for deployment.
 unix {

@@ -254,16 +254,12 @@ namespace beuth {
     template <typename TDataType>
     Matrix<TDataType>::each_row::each_row(const Matrix<TDataType>& m)
       : m(m)
-    {
-      std::cout << "copy" << std::endl;
-    }
+    {}
 
     template <typename TDataType>
     Matrix<TDataType>::each_row::each_row(Matrix<TDataType>&& m)
       : m(m)
-    {
-      std::cout << "move" << std::endl;
-    }
+    {}
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Matrix::each_column
@@ -319,18 +315,16 @@ namespace beuth {
 
     template <typename TDataType>
     Matrix<TDataType>& Matrix<TDataType>::operator=(Matrix<TDataType>&& m) {
-      assert(rows == m.rows);
-      assert(columns == m.columns);
-
+      rows = m.rows;
+      columns = m.columns;
       data = std::move(m.data);
       return *this;
     }
 
     template <typename TDataType>
     Matrix<TDataType>& Matrix<TDataType>::operator=(const Matrix<TDataType>& m) {
-      assert(rows == m.rows);
-      assert(columns == m.columns);
-
+      rows = m.rows;
+      columns = m.columns;
       data = m.data;
       return *this;
     }

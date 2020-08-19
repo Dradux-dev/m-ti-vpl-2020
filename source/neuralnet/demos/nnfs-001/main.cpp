@@ -23,7 +23,7 @@ class ConfigurableLayer : public beuth::ai::Layer<T> {
 
 using Matrix = beuth::math::Matrix<float>;
 using Layer = ConfigurableLayer<float>;
-
+using NeuralNetwork = beuth::ai::NeuralNetwork<float>;
 
 
 int main()
@@ -54,6 +54,11 @@ int main()
   testLayer.setBiases(bias);
   std::cout << "layer = [" << std::endl
             << testLayer.feedForward(inputs)
+            << "]" << std::endl;
+
+  NeuralNetwork nn({4,16,8,4});
+  std::cout << "nn = [" << std::endl
+            << nn.processInputs(inputs)
             << "]" << std::endl;
 
   return 0;
