@@ -2,13 +2,74 @@
 
 using namespace std;
 
-ThreadManager::ThreadManager()
+void Thread::processJobs()
 {
-    threads.reserve(THREAD_COUNT);
+    while(!shallStop)
+    {
+        std::unique_lock<std::mutex> lock(sleepMutex);
+        sleepCondition.wait(lock, [shallSleep] {
+            return !shallSleep && !shallStop;
+        });
+
+        if (shallStop)
+        {
+            continue;
+        }
+
+        Job job;
+
+        if(jobs.size() > 0)
+        {
+            busyMutex.try_lock();
+
+            isProcessing = true;
+
+            // get job
+            {
+                lock_guard jobsLock(jobsMutex);
+                job = std::move(*jobs.front());
+                jobs.pop();
+            }
+
+            // process job
+            int x = job();
+
+            // store result
+            {
+                lock_guard resultsLock(resultsMutex);
+                results.emplace(x);
+            }
+
+            isProcessing = false;
+        }
+        else 
+        {
+            busyMutex.unlock();
+            busyCondition.notify_one();
+        }
+        lock.unlock();
+    }
+    busyMutex.unlock();
+    busyCondition.notify_one();
+}
+
+ThreadManager::ThreadManager(int threadCount)
+{
+    threads.reserve(threadCount);
+}
+
+ThreadManager::~ThreadManager()
+{
+    for (Thread& t : threads)
+    {
+        t.stop();
+    }
 }
 
 vector<Result> *ThreadManager::processJobs(vector<Job> *jobs)
 {
+    const int THREAD_COUNT = threads.capacity();
+
     // Speicher für Ergebnisvektor anlegen
     this->finalResult.reserve(jobs->capacity());
 
@@ -48,22 +109,42 @@ vector<Result> *ThreadManager::processJobs(vector<Job> *jobs)
     return &finalResult;
 }
 
-// Funktion für die einzelnen Threads
-void ThreadManager::_processJobs(
-    vector<Job> *jobs, 
-    int fstElement,
-    int lastElement)
-    //vector<Job>::iterator fstElement, 
-    //vector<Job>::iterator lastElement)
+void ThreadManager::addJob(Job &&job)
 {
-    
-    for (int curr = fstElement; curr <= lastElement; curr++)
+    static std::size_t current = 0;
+
+    Thread &currentThread = threads[current];
+    currentThread.addJob(job);
+    ++current;
+
+    if (current >= threads.size())
     {
-        //printf("%d + %d = %d\n", jobs->at(curr).fstNumber, jobs->at(curr).scndNumber, (jobs->at(curr).fstNumber + jobs->at(curr).scndNumber));
-        
-        m.lock();
-        finalResult.emplace_back( Result {.result = jobs->at(curr).fstNumber + jobs->at(curr).scndNumber});
-        m.unlock();
+        current = 0;
     }
-    
+}
+
+void ThreadManager::createThreads(std::size_t jobCount)
+{
+    assert(threads.size() < threads.capacity());
+
+    for (std::size_t n = 0; n < threads.capacity(); ++n)
+    {
+        threads.emplace_back(jobCount);
+    }
+}
+
+void ThreadManager::start()
+{
+    for (Thread& t : threads)
+    {
+        t.wakeUp();
+    }
+}
+
+void ThreadManager::stop()
+{
+    for (Thread& t : threads)
+    {
+        t.sleepWhenDone();
+    }
 }

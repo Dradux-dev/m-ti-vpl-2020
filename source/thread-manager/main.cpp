@@ -10,26 +10,18 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	int retVal = 0;
+    vector<Job> jobs = {Job(1,2), Job(0,4), Job(2,3), Job(5,5), Job(8,3)};
 
-    Job fst = {.fstNumber = 1, .scndNumber = 2};
-    Job scnd = {.fstNumber = 0, .scndNumber = 4};
-    Job thrd = {.fstNumber = 2, .scndNumber = 3};
-    Job fourth = {.fstNumber = 5, .scndNumber = 5};
-    Job fifth = {.fstNumber = 8, .scndNumber = 3};
+	ThreadManager m;
 
-    vector<Job> jobs = {fst, scnd, thrd, fourth, fifth};
+    vector<Result> *result = m.processJobs(&jobs);
 
-	ThreadManager *m = new ThreadManager();
-
-    vector<Result> *result = m->processJobs(&jobs);
-
-    for (Result &r : *result)
+    for (const Result &r : *result)
     {
         printf("%d\n", r.result);
     }
 
-	delete m;	
-
-	return retVal;
+    //[[maybe_unused]] int x = 5 + 8;
+    //assert(x==13);
+	return 0;
 }
