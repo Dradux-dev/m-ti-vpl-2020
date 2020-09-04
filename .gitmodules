@@ -1,3 +1,6 @@
-[submodule "source/neuralnet/dependencies/Catch2"]
-	path = source/neuralnet/dependencies/Catch2
+[submodule "source/dependencies/Catch2"]
+	path = source/dependencies/Catch2
 	url = https://github.com/catchorg/Catch2.git
+[submodule "source/dependencies/jsoncpp"]
+	path = source/dependencies/jsoncpp
+	url = https://github.com/open-source-parsers/jsoncpp.git
