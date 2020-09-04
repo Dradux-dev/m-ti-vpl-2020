@@ -4,7 +4,7 @@
 
 // custom library
 
-#include "thread_manager.hpp"
+#include <thread_manager.hpp>
 
 /*
 struct Job
@@ -63,7 +63,7 @@ using namespace std;
 
 int main(int, char**)
 {
-  using ThreadManager = ThreadManager<Job,Result>;
+  using ThreadManager = beuth::thread::ThreadManager<Job,Result>;
   vector<Job> jobs = {Job(1,2), Job(0,4), Job(2,3), Job(5,5), Job(8,3)};
 
   ThreadManager m(4, [](Job&& job) -> Result {

@@ -1,3 +1,5 @@
+CONFIG += qt
+QT += core
 QT -= gui
 
 TEMPLATE = lib

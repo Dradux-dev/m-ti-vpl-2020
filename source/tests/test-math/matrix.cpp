@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
 
-#include <beuth-math/matrix.hpp>
+#include <matrix.hpp>
 
 template <typename T>
 using Matrix = beuth::math::Matrix<T>;
