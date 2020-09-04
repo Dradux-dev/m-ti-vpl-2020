@@ -4,8 +4,8 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-        main.cpp \
-		threadManager.cpp
+        main.cpp
 		
 HEADERS += \
-	threadManager.h
+	thread_manager.hpp \
+	thread.hpp 
