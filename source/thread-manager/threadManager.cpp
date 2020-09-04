@@ -66,7 +66,7 @@ ThreadManager::~ThreadManager()
     }
 }
 
-vector<Result> *ThreadManager::processJobs(vector<Job> *jobs)
+vector<Result> ThreadManager::processJobs(vector<Job> &&jobs)
 {
     const int THREAD_COUNT = threads.capacity();
 
@@ -74,39 +74,22 @@ vector<Result> *ThreadManager::processJobs(vector<Job> *jobs)
     this->finalResult.reserve(jobs->capacity());
 
     // Anzahl der Elemente pro Thread ohne Rest
-    int jobsPerThread = floor(jobs->size() / THREAD_COUNT);
-
-    // Bestimmung des Restes für faire Verteilung über die anderen Threads
-    int restJobs = jobs->size() % THREAD_COUNT;
-
-    int fstElement = 0;
-    int lastElement = jobsPerThread - 1;
-    //auto fstElement = jobs->begin();
-    //auto lastElement = jobs->begin() + jobsPerThread;
+    int jobsPerThread = jobs->size() / THREAD_COUNT + 1;
 
     for (int i = 0; i < THREAD_COUNT; i++)
     {
-        // Füge je ein Element zu den Threads hinzu bis der Rest gleichmäßg verteilt wurde
-        if (restJobs > 0)
-        {
-            puts("Job angehängt");
-            lastElement += 1;
-            restJobs--;
-        }
-
-        printf("THREAD %d: Index %d - Index %d\n", i, fstElement, lastElement);
-        threads.emplace_back(&ThreadManager::_processJobs, this, jobs, fstElement, lastElement);
-
-        fstElement = lastElement + 1;
-        lastElement = fstElement + jobsPerThread - 1;
+        cout << "THREAD " << i << ": created" << endl;
+        threads.emplace_back(jobsPerThread);
     }
 
-    for (thread &thread : threads)
+    for (Thread &thread : threads)
     {
-        thread.join();
+        thread.sleepWhenDone();
+        queue<Result> q = thread.takeResults();
+        finalResult.insert(finalResult.end(), begin(q), end(q));
     }
     
-    return &finalResult;
+    return move(finalResult);
 }
 
 void ThreadManager::addJob(Job &&job)

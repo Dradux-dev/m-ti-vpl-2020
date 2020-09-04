@@ -128,6 +128,12 @@ public:
         busyCondition.wait(lk, [this] { return !this->isBusy(); });
     }
 
+    [[nodiscard]] inline std::queue<Result> takeResults() noexcept
+    {
+        lock_guard resultsLock(resultsMutex);
+        return std::move(results);
+    }
+
 private:
     mutable std::mutex jobsMutex;
     mutable std::mutex resultsMutex;
