@@ -1,5 +1,8 @@
 #include "threadManager.h"
 
+#include <assert.h>
+#include <iterator>
+
 using namespace std;
 
 void Thread::processJobs()
@@ -7,8 +10,20 @@ void Thread::processJobs()
     while(!shallStop)
     {
         std::unique_lock<std::mutex> lock(sleepMutex);
-        sleepCondition.wait(lock, [shallSleep] {
-            return !shallSleep && !shallStop;
+        sleepCondition.wait(lock, [this] {
+           // [Goal]
+           // Sleep Stop | r
+           //     0    0   1
+           //     0    1   1
+           //     1    0   0
+           //     1    1   1
+           return this->shallStop || !this->shallSleep;
+           // [Current State]
+           // Sleep Stop | Stop !Sleep | f
+           //     0    0 |    0      1 | 1
+           //     0    1 |    1      1 | 1
+           //     1    0 |    0      0 | 0
+           //     1    1 |    1      0 | 1
         });
 
         if (shallStop)
@@ -27,8 +42,8 @@ void Thread::processJobs()
             // get job
             {
                 lock_guard jobsLock(jobsMutex);
-                job = std::move(*jobs.front());
-                jobs.pop();
+                job = std::move(jobs.front());
+                jobs.erase(jobs.begin());
             }
 
             // process job
@@ -37,7 +52,7 @@ void Thread::processJobs()
             // store result
             {
                 lock_guard resultsLock(resultsMutex);
-                results.emplace(x);
+                results.emplace_back(x);
             }
 
             isProcessing = false;
@@ -60,34 +75,33 @@ ThreadManager::ThreadManager(int threadCount)
 
 ThreadManager::~ThreadManager()
 {
-    for (Thread& t : threads)
+    for (std::shared_ptr<Thread> t : threads)
     {
-        t.stop();
+        t->stop();
     }
 }
 
 vector<Result> ThreadManager::processJobs(vector<Job> &&jobs)
 {
+
     const int THREAD_COUNT = threads.capacity();
 
     // Speicher für Ergebnisvektor anlegen
-    this->finalResult.reserve(jobs->capacity());
+    this->finalResult.reserve(jobs.capacity());
 
-    // Anzahl der Elemente pro Thread ohne Rest
-    int jobsPerThread = jobs->size() / THREAD_COUNT + 1;
+    std::cout << "Starting threads..." << std::endl;
+    createThreads(jobs.capacity() / THREAD_COUNT + 1);
 
-    for (int i = 0; i < THREAD_COUNT; i++)
-    {
-        cout << "THREAD " << i << ": created" << endl;
-        threads.emplace_back(jobsPerThread);
+    std::cout << "Assigning jobs...." << std::endl;
+    for (const Job job : jobs) {
+      addJob(Job(job));
     }
 
-    for (Thread &thread : threads)
-    {
-        thread.sleepWhenDone();
-        queue<Result> q = thread.takeResults();
-        finalResult.insert(finalResult.end(), begin(q), end(q));
-    }
+    std::cout << "Waking threads..." << std::endl;
+    start();
+
+    std::cout << "Waiting for all results..." << std::endl;
+    stop();
     
     return move(finalResult);
 }
@@ -96,8 +110,8 @@ void ThreadManager::addJob(Job &&job)
 {
     static std::size_t current = 0;
 
-    Thread &currentThread = threads[current];
-    currentThread.addJob(job);
+    std::shared_ptr<Thread> currentThread = threads[current];
+    currentThread->addJob(std::move(job));
     ++current;
 
     if (current >= threads.size())
@@ -112,22 +126,24 @@ void ThreadManager::createThreads(std::size_t jobCount)
 
     for (std::size_t n = 0; n < threads.capacity(); ++n)
     {
-        threads.emplace_back(jobCount);
+        threads.emplace_back(new Thread(jobCount));
     }
 }
 
 void ThreadManager::start()
 {
-    for (Thread& t : threads)
+    for (std::shared_ptr<Thread> t : threads)
     {
-        t.wakeUp();
+        t->wakeUp();
     }
 }
 
 void ThreadManager::stop()
 {
-    for (Thread& t : threads)
+    for (std::shared_ptr<Thread> t : threads)
     {
-        t.sleepWhenDone();
+        t->sleepWhenDone();
+        vector<Result> r = t->takeResults();
+        finalResult.insert(finalResult.end(), begin(r), end(r));
     }
 }

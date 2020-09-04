@@ -22,17 +22,25 @@ struct Job
 {
     int lhs;
     int rhs;
+
     inline Job(int lhs, int rhs)
         : lhs(lhs),
           rhs(rhs)
-    {
-    }
+    {}
+
     Job() = default;
+    Job(const Job&) = default;
     Job(Job&&) = default;
 
     inline int operator()() 
     {
         return lhs + rhs;
+    }
+
+    Job& operator=(Job&& job) {
+        lhs = job.lhs;
+        rhs = job.rhs;
+        return *this;
     }
 };
 
@@ -41,10 +49,16 @@ struct Result
     int result;
     inline explicit Result(int result)
         : result(result)
-    {
-    }
+    {}
+
     Result() = default;
+    Result(const Result&) = default;
     Result(Result&&) = default;
+
+    Result& operator=(const Result& r) {
+        result = r.result;
+        return *this;
+    }
 };
 
 class Thread : public std::thread
@@ -128,7 +142,7 @@ public:
         busyCondition.wait(lk, [this] { return !this->isBusy(); });
     }
 
-    [[nodiscard]] inline std::queue<Result> takeResults() noexcept
+    [[nodiscard]] inline std::vector<Result> takeResults() noexcept
     {
         lock_guard resultsLock(resultsMutex);
         return std::move(results);
@@ -137,8 +151,8 @@ public:
 private:
     mutable std::mutex jobsMutex;
     mutable std::mutex resultsMutex;
-    std::queue<Job> jobs;
-    std::queue<Result> results;
+    std::vector<Result> results;
+    std::vector<Job> jobs;
     volatile bool isProcessing = false;
     std::mutex sleepMutex;
     std::condition_variable sleepCondition;
@@ -161,6 +175,6 @@ public:
 
 private:
     std::mutex m;
-    std::vector<Thread> threads;
+    std::vector<std::shared_ptr<Thread>> threads;
     std::vector<Result> finalResult;
 };

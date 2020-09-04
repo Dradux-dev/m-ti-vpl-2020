@@ -8,15 +8,15 @@
 
 using namespace std;
 
-int main(int argc, char *argv[])
+int main(int, char**)
 {
     vector<Job> jobs = {Job(1,2), Job(0,4), Job(2,3), Job(5,5), Job(8,3)};
 
-	ThreadManager m;
+  ThreadManager m(1);
 
-    vector<Result> *result = m.processJobs(&jobs);
+    vector<Result> result = m.processJobs(std::move(jobs));
 
-    for (const Result &r : *result)
+    for (const Result &r : result)
     {
         printf("%d\n", r.result);
     }
