@@ -79,7 +79,9 @@ public:
 
     virtual ~Thread()
     {
-        join();
+        if (joinable()) {
+            join();
+        }
     }
 
     void processJobs();
@@ -106,7 +108,6 @@ public:
     {
         shallStop = true;
         sleepCondition.notify_one();
-        join();
     }
 
     inline void stop()
@@ -114,7 +115,6 @@ public:
         waitForJobs();
         shallStop = true;
         sleepCondition.notify_one();
-        join();
     }
 
     inline void sleepWhenDone()
