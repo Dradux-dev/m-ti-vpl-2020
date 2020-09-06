@@ -20,6 +20,8 @@ DEPENDPATH += $$PWD/../../libs/beuth-math
 HEADERS += \
     benchmark.h \
     config.h \
+    duration.h \
+    evaluator.h \
     measurement.h \
     nosimd.h \
     randomizer.h \

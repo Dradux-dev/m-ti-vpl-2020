@@ -6,11 +6,12 @@
 
 #include "benchmark.h"
 #include "config.h"
+#include "evaluator.h"
 #include "nosimd.h"
 
 int main(int, char**)
 {
-  constexpr Config config(1, 200, 100);
+  constexpr Config config(1, 75, 100);
 
   // Check setup
   static_assert (config.minSize > 0, "Matrix 0x0 is not allowed (min size)");
@@ -21,6 +22,7 @@ int main(int, char**)
   benchmark.addVariant<NoSimd>(config);
 
   benchmark.run();
+  std::cout << AvgEvaluator<Config>(benchmark);
 
   return 0;
 }

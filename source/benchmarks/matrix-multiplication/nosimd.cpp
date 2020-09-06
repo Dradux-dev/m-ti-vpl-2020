@@ -5,7 +5,7 @@
 #include "randomizer.h"
 
 NoSimd::NoSimd(const Config& config)
-  : Variant<Config>(config)
+  : Variant<Config>(config, "No SIMD")
 {}
 
 void NoSimd::run() {

@@ -1,8 +1,12 @@
 #pragma once
 
+#include <functional>
+#include <iomanip>
+#include <iostream>
 #include <memory>
 #include <vector>
 
+#include "duration.h"
 #include "measurement.h"
 #include "variant.h"
 
@@ -10,9 +14,25 @@ template <typename TConfig>
 class Benchmark
 {
   public:
+    using variant_t = Variant<TConfig>;
+    using variant_ptr_t = std::shared_ptr<variant_t>;
+    using variants_t = std::vector<variant_ptr_t>;
+
     enum class Behavior : std::uint8_t {
       SEQUENTIAL,
       PARALLEL
+    };
+
+    struct Format {
+        std::size_t width;
+        std::size_t precision;
+        char fill;
+
+        constexpr inline explicit Format(std::size_t width = 10, std::size_t precision = 4, char fill = ' ')
+          : width(width),
+            precision(precision),
+            fill(fill)
+        {}
     };
 
     inline explicit Benchmark(Behavior behavior = Behavior::SEQUENTIAL)
@@ -20,9 +40,15 @@ class Benchmark
     {}
 
     template <typename TVariant, typename... TArgs>
-    inline std::shared_ptr<Variant<TConfig>> addVariant(TArgs&&... args);
+    inline variant_ptr_t addVariant(TArgs&&... args);
 
     void run();
+
+    inline void setFormat(const Format& format);
+
+    inline const Format& getFormat() const;
+    inline const variant_t& getVariant(std::size_t column) const;
+    inline const variants_t& getVariants() const;
 
   protected:
     void runSequential();
@@ -30,12 +56,13 @@ class Benchmark
 
   protected:
     Behavior behavior;
-    std::vector<std::shared_ptr<Variant<TConfig>>> variants;
+    Format format;
+    variants_t variants;
 };
 
 template <typename TConfig>
 template <typename TVariant, typename... TArgs>
-inline std::shared_ptr<Variant<TConfig>> Benchmark<TConfig>::addVariant(TArgs&&... args) {
+inline typename Benchmark<TConfig>::variant_ptr_t Benchmark<TConfig>::addVariant(TArgs&&... args) {
   variants.emplace_back(new TVariant(std::forward<TArgs>(args)...));
   return *(variants.end()-1);
 }
@@ -50,6 +77,26 @@ void Benchmark<TConfig>::run() {
       runParallel();
     break;
   }
+}
+
+template <typename TConfig>
+inline void Benchmark<TConfig>::setFormat(const Format& format) {
+  this->format = format;
+}
+
+template <typename TConfig>
+inline const typename Benchmark<TConfig>::Format& Benchmark<TConfig>::getFormat() const {
+  return format;
+}
+
+template <typename TConfig>
+inline const typename Benchmark<TConfig>::variant_t& Benchmark<TConfig>::getVariant(std::size_t column) const {
+  return *variants[column];
+}
+
+template <typename TConfig>
+inline const typename Benchmark<TConfig>::variants_t& Benchmark<TConfig>::getVariants() const {
+  return variants;
 }
 
 template <typename TConfig>
@@ -75,4 +122,3 @@ void Benchmark<TConfig>::runParallel() {
     variant->cleanup();
   }
 }
-
