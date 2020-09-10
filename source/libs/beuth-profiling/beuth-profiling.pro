@@ -17,11 +17,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    beuthprofiling.cpp
+    beuthprofiling.cpp \
+    stopwatch.cpp
 
 HEADERS += \
     beuth-profiling_global.h \
-    beuthprofiling.h
+    beuthprofiling.h \
+    stopwatch.h
 
 # Default rules for deployment.
 unix {
