@@ -1,13 +1,16 @@
 TEMPLATE = app
-CONFIG += console c++11
+CONFIG += console c++20
 CONFIG -= app_bundle
 CONFIG -= qt
+
+QMAKE_CXXFLAGS +=-msse4.1
 
 SOURCES += \
         main.cpp \
         measurement.cpp \
         nosimd.cpp \
         randomizer.cpp \
+        simd.cpp \
         variant.cpp
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../libs/beuth-math/release/ -lbeuth-math
@@ -25,4 +28,5 @@ HEADERS += \
     measurement.h \
     nosimd.h \
     randomizer.h \
+    simd.h \
     variant.h

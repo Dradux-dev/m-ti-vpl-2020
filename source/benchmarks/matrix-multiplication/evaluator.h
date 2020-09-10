@@ -121,19 +121,18 @@ std::ostream& operator<<(std::ostream& os, const Evaluator<TConfig>& evaluator) 
   const std::size_t rows = evaluator.getRows();
   const typename Benchmark<TConfig>::Format& format = evaluator.benchmark.getFormat();
 
-  bool first = true;
+  os << "#" << std::setfill(' ') << std::setw(format.width-1) << "Test";
   for (std::size_t column = 0; column < columns; ++column) {
-    std::size_t width = first ? width : width-1;
     std::string title = evaluator.getTitle(column);
-    os << (first ? "#" : "") << std::setfill(' ') << std::setw(width) << title.substr(0, std::min(width, title.length())) << " ";
-    first = false;
+    os << std::setfill(' ') << std::setw(format.width) << title.substr(0, std::min(format.width, title.length())) << " ";
   }
   os << std::endl;
 
 
   for (std::size_t row = 0; row < rows; ++row) {
+    os << std::setfill(format.fill) << std::setw(format.width) << (row+1) << " ";
+
     for (std::size_t column = 0; column < columns; ++column) {
-      os << std::setfill(format.fill) << std::setw(format.width) << (row+1) << " ";
       os << std::setfill(format.fill) << std::setw(format.width) << std::setprecision(format.precision) << evaluator.getValue(column, row) << " ";
     }
     os << std::endl;

@@ -7,6 +7,10 @@
 #include <iostream>
 #include <vector>
 
+#ifdef BEUTH_MATH_USE_SIMD
+#include "simd.hpp"
+#endif
+
 namespace beuth {
   namespace math {
     template <typename TDataType>
@@ -442,8 +446,10 @@ namespace beuth {
 
       Matrix<TDataType> result(lhs.rows, rhs.columns);
 
+#ifndef BEUTH_MATH_USE_SIMD
       for (std::size_t row = 0; row < lhs.rows; ++row) {
         for (std::size_t column = 0; column < rhs.columns; ++column) {
+
           TDataType value = TDataType();
 
           for (std::size_t pos = 0; pos < lhs.columns; ++pos) {
@@ -453,8 +459,79 @@ namespace beuth {
           }
 
           result[row][column] = value;
+
         }
       }
+#else
+      constexpr const std::size_t lanes = 4;
+      std::size_t total = lhs.rows * rhs.columns;
+
+      auto getColumn = [&](std::size_t index) -> std::size_t {
+        return index % rhs.columns;
+      };
+
+      auto set = [&](std::size_t row, std::size_t column, float value) -> void {
+        if (row < result.rows && column < result.columns) {
+          result[row][column] = value;
+        }
+      };
+
+      auto getlhs = [&](std::size_t row, std::size_t column) -> TDataType {
+        if (row < lhs.rows && column < lhs.columns) {
+          return lhs[row][column];
+        }
+
+        return 0.0f;
+      };
+
+      auto getrhs = [&](std::size_t row, std::size_t column) -> TDataType {
+        return (row < rhs.rows && column < rhs.columns) * rhs[row][column];
+      };
+
+      for (std::size_t index = 0; index < total; index += lanes) {
+        SimdRegister<TDataType> values;
+        SimdRegister<int> indices {
+          static_cast<int>(index),
+          static_cast<int>(index+1),
+          static_cast<int>(index+2),
+          static_cast<int>(index+3)
+        };
+
+        SimdRegister<int> rowValues = indices / static_cast<int>(rhs.columns);
+
+        std::size_t colValues[] = {
+          getColumn(index),
+          getColumn(index+1),
+          getColumn(index+2),
+          getColumn(index+3)
+        };
+
+        for (std::size_t pos = 0; pos < lhs.columns; ++pos) {
+
+
+          SimdRegister<TDataType> lhsv {
+            getlhs(rowValues[0], pos),
+            getlhs(rowValues[1], pos),
+            getlhs(rowValues[2], pos),
+            getlhs(rowValues[3], pos)
+          };
+
+          SimdRegister<TDataType> rhsv {
+            getrhs(pos, getColumn(index)),
+            getrhs(pos, getColumn(index+1)),
+            getrhs(pos, getColumn(index)+2),
+            getrhs(pos, getColumn(index+3))
+          };
+
+          values = values + (lhsv * rhsv);
+        }
+
+        set(rowValues[0], colValues[0], values[0]);
+        set(rowValues[1], colValues[1], values[1]);
+        set(rowValues[2], colValues[2], values[2]);
+        set(rowValues[3], colValues[3], values[3]);
+      }
+#endif
 
       return std::move(result);
     }

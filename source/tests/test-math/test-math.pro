@@ -3,6 +3,8 @@ CONFIG += console c++20
 CONFIG -= app_bundle
 CONFIG -= qt
 
+QMAKE_CXXFLAGS +=-msse4.1
+
 SOURCES += \
         main.cpp \
         matrix.cpp

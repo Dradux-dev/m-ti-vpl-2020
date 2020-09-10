@@ -2,8 +2,9 @@ CONFIG += qt
 QT += core
 QT -= gui
 
+QMAKE_CXXFLAGS +=-msse4.1
+
 TEMPLATE = lib
-DEFINES += BEUTHMATH_LIBRARY
 
 CONFIG += c++20
 
@@ -27,7 +28,8 @@ HEADERS += \
     binary.hpp \
     linear.hpp \
     matrix.hpp \
-    non-linear.hpp
+    non-linear.hpp \
+    simd.hpp
 
 # Default rules for deployment.
 unix {

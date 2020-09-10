@@ -1,18 +1,19 @@
-#include "nosimd.h"
+#include "simd.h"
 
 #include <algorithm>
+#define BEUTH_MATH_USE_SIMD
 #include <matrix.hpp>
 
 #include "randomizer.h"
 
-NoSimd::NoSimd(const Config& config)
-  : Variant<Config>(config, "No SIMD")
+Simd::Simd(const Config& config)
+  : Variant<Config>(config, "SIMD")
 {}
 
-void NoSimd::run() {
+void Simd::run() {
   using Matrix = beuth::math::Matrix<float>;
 
-  std::cout << "NoSimd(Benchmark)" << std::endl;
+  std::cout << "Simd(Benchmark)" << std::endl;
 
   MatrixRandomizer<float> randomizeMatrix;
 

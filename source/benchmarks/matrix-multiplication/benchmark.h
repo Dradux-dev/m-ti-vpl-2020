@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <functional>
 #include <iomanip>
 #include <iostream>
@@ -69,6 +70,8 @@ inline typename Benchmark<TConfig>::variant_ptr_t Benchmark<TConfig>::addVariant
 
 template <typename TConfig>
 void Benchmark<TConfig>::run() {
+  std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
+
   switch(behavior) {
     case Behavior::SEQUENTIAL:
         runSequential();
@@ -77,6 +80,10 @@ void Benchmark<TConfig>::run() {
       runParallel();
     break;
   }
+
+  std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
+  std::chrono::seconds duration = std::chrono::duration_cast<std::chrono::seconds>(endTime - startTime);
+  std::cout << "Benchmark finished after: " << duration.count() << " seconds" << std::endl;
 }
 
 template <typename TConfig>
