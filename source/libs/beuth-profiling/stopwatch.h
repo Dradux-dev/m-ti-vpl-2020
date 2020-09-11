@@ -21,7 +21,12 @@ namespace beuth {
         [[nodiscard]] bool isStopped() const;
 
         template <typename T>
-        [[nodiscard]] T getDuration() const;
+        [[nodiscard]] typename std::enable_if<std::is_same<T, std::chrono::microseconds>::value, T>::type getDuration() const;
+
+        template <typename T>
+        [[nodiscard]] typename std::enable_if<!std::is_same<T, std::chrono::microseconds>::value, T>::type getDuration() const;
+
+        std::chrono::high_resolution_clock::time_point getStartTime() const;
 
       protected:
         class State {
@@ -45,16 +50,20 @@ namespace beuth {
       protected:
         std::string name;
         State* state = nullptr;
-        std::chrono::nanoseconds duration;
+        std::chrono::microseconds duration;
         std::chrono::high_resolution_clock::time_point startTime;
-        std::chrono::high_resolution_clock::time_point endTime;
 
         static State* STOPPED;
         static State* RUNNING;
     };
 
     template <typename T>
-    T Stopwatch::getDuration() const {
+    [[nodiscard]] typename std::enable_if<std::is_same<T, std::chrono::microseconds>::value, T>::type Stopwatch::getDuration() const {
+      return duration;
+    }
+
+    template <typename T>
+    [[nodiscard]] typename std::enable_if<!std::is_same<T, std::chrono::microseconds>::value, T>::type Stopwatch::getDuration() const {
       return std::chrono::duration_cast<T>(duration);
     }
   }

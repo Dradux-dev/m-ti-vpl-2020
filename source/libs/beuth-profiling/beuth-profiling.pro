@@ -18,11 +18,24 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     beuthprofiling.cpp \
+    chrome.cpp \
+    exporter.cpp \
+    function.cpp \
+    observer.cpp \
+    profiler.cpp \
+    section.cpp \
     stopwatch.cpp
 
 HEADERS += \
     beuth-profiling_global.h \
     beuthprofiling.h \
+    chrome.h \
+    exporter.h \
+    function.h \
+    observer.h \
+    profiler.h \
+    profiling.h \
+    section.h \
     stopwatch.h
 
 # Default rules for deployment.

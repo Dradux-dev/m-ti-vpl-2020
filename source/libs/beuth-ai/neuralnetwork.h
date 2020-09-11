@@ -21,6 +21,9 @@ namespace beuth {
     /// https://fabiensanglard.net/revisiting_the_pathtracer/SIMD_Tutorial.pdf
     /// https://www.youtube.com/watch?v=GwII1AJzKN4
     /// https://users.ece.cmu.edu/~franzf/teaching/slides-18-645-simd.pdf
+    /// https://www.chromium.org/developers/how-tos/trace-event-profiling-tool
+    /// https://www.youtube.com/watch?v=xlAH4dbMVnU
+    /// https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Layer
