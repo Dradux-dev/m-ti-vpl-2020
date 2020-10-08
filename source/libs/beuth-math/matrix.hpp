@@ -7,6 +7,8 @@
 #include <iostream>
 #include <vector>
 
+#include "../beuth-profiling/profiling.h"
+
 #ifdef BEUTH_MATH_USE_SIMD
 #include "simd.hpp"
 #endif
@@ -442,14 +444,17 @@ namespace beuth {
 
     template <typename TDataType>
     Matrix<TDataType> operator*(const Matrix<TDataType>& lhs, const Matrix<TDataType>& rhs) {
+      BEUTH_PROFILING_FUNCTION("function,beuth,math,matrix,multiplication,operator");
       assert(lhs.columns == rhs.rows);
 
       Matrix<TDataType> result(lhs.rows, rhs.columns);
 
 #ifndef BEUTH_MATH_USE_SIMD
+      BEUTH_PROFILING_BEGIN_SECTION(NoSIMD, "section,beuth,math,matrix,multiplication,operator,compiler-optimization");
       for (std::size_t row = 0; row < lhs.rows; ++row) {
+        BEUTH_PROFILING_BEGIN_SECTION(Row, "section,beuth,math,matrix,multiplication,operator,row");
         for (std::size_t column = 0; column < rhs.columns; ++column) {
-
+          BEUTH_PROFILING_BEGIN_SECTION(Col, "section,beuth,math,matrix,mutliplication,operator,column");
           TDataType value = TDataType();
 
           for (std::size_t pos = 0; pos < lhs.columns; ++pos) {
@@ -459,9 +464,11 @@ namespace beuth {
           }
 
           result[row][column] = value;
-
+          BEUTH_PROFILING_END_SECTION(Col);
         }
+        BEUTH_PROFILING_END_SECTION(Row);
       }
+      BEUTH_PROFILING_END_SECTION(NoSIMD);
 #else
       constexpr const std::size_t lanes = 4;
       std::size_t total = lhs.rows * rhs.columns;
@@ -489,6 +496,7 @@ namespace beuth {
       };
 
       for (std::size_t index = 0; index < total; index += lanes) {
+        BEUTH_PROFILING_BEGIN_SECTION(Preparation, "beuth,math,matrix,operator,simd");
         SimdRegister<TDataType> values;
         SimdRegister<int> indices {
           static_cast<int>(index),
@@ -505,7 +513,9 @@ namespace beuth {
           getColumn(index+2),
           getColumn(index+3)
         };
+        BEUTH_PROFILING_END_SECTION(Preparation);
 
+        BEUTH_PROFILING_BEGIN_SECTION(Calculation,"beuth,math,matrix,multiplication");
         for (std::size_t pos = 0; pos < lhs.columns; ++pos) {
 
 
@@ -530,6 +540,7 @@ namespace beuth {
         set(rowValues[1], colValues[1], values[1]);
         set(rowValues[2], colValues[2], values[2]);
         set(rowValues[3], colValues[3], values[3]);
+        BEUTH_PROFILING_END_SECTION(Calculation);
       }
 #endif
 

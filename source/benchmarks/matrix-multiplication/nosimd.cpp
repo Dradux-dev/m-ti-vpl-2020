@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <matrix.hpp>
+#include <profiling.h>
 
 #include "randomizer.h"
 
@@ -10,6 +11,7 @@ NoSimd::NoSimd(const Config& config)
 {}
 
 void NoSimd::run() {
+  BEUTH_PROFILING_FUNCTION("benchmark,variant,execution");
   using Matrix = beuth::math::Matrix<float>;
 
   std::cout << "NoSimd(Benchmark)" << std::endl;

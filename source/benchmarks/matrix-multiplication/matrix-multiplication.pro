@@ -3,6 +3,8 @@ CONFIG += console c++20
 CONFIG -= app_bundle
 CONFIG -= qt
 
+DEFINES += ENABLE_BEUTH_PROFILING
+
 QMAKE_CXXFLAGS +=-msse4.1
 
 SOURCES += \
@@ -30,3 +32,10 @@ HEADERS += \
     randomizer.h \
     simd.h \
     variant.h
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../libs/beuth-profiling/release/ -lbeuth-profiling
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../libs/beuth-profiling/debug/ -lbeuth-profiling
+else:unix: LIBS += -L$$OUT_PWD/../../libs/beuth-profiling/ -lbeuth-profiling
+
+INCLUDEPATH += $$PWD/../../libs/beuth-profiling
+DEPENDPATH += $$PWD/../../libs/beuth-profiling

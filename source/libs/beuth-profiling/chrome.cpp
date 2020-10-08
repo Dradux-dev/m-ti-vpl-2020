@@ -1,5 +1,6 @@
 #include "chrome.h"
 
+#include <iomanip>
 #include <iostream>
 #include <thread>
 
@@ -23,21 +24,23 @@ namespace beuth {
       firstEntry = true;
     }
 
-    void Chrome::addEntry(const std::string &name, const std::string& categories, std::chrono::high_resolution_clock::time_point startTime, std::chrono::microseconds duration) {
+    void Chrome::addEntry(const std::string &name, const std::string& categories, std::size_t depth, std::chrono::high_resolution_clock::time_point startTime, std::chrono::microseconds duration) {
       if (!file.is_open()) {
         std::cerr << "Can not add entry, because no session was started" << std::endl;
       }
 
       long long start = std::chrono::time_point_cast<std::chrono::microseconds>(startTime).time_since_epoch().count();
 
+      // Uses pid as thread id
+      // Uses tid as layer id
       file << (firstEntry ? "" : ", ") << "{ "
            << "\"name\" : \"" << name << "\", "
            << "\"cat\" : \"" << categories << "\", "
            << "\"ph\" : \"X\", "
            << "\"ts\" : " << start << ", "
            << "\"dur\" : " << duration.count() << ", "
-           << "\"pid\" : " << getpid() << ", "
-           << "\"tid\" : " << std::this_thread::get_id() << " "
+           << "\"pid\" : " << std::this_thread::get_id() << ", "
+           << "\"tid\" : " << depth << " "
            << "}"
            << std::flush;
 

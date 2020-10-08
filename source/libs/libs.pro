@@ -5,4 +5,5 @@ SUBDIRS += \
     beuth-math  \
     beuth-profiling \
     beuth-thread \
-    beuth-vfs
+    beuth-vfs \
+    external-jsoncpp

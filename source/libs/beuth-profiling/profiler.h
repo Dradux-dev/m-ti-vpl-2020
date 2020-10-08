@@ -13,7 +13,7 @@ namespace beuth {
       public:
         static Profiler& Instance();
 
-        virtual void sectionFinished(const std::string &identifier, const std::string& categories, std::chrono::high_resolution_clock::time_point startTime, std::chrono::microseconds duration) override;
+        virtual void sectionFinished(const std::string &identifier, const std::string& categories, std::size_t depth, std::chrono::high_resolution_clock::time_point startTime, std::chrono::microseconds duration) override;
 
         void beginSession(const std::string& name);
         void endSession();

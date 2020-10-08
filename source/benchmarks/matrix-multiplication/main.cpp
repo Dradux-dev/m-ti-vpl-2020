@@ -42,7 +42,10 @@ inline bool saveData(const MaxEvaluator<TConfig>& max) {
 
 int main(int, char**)
 {
-  constexpr Config config(1, 5760, 250, 1);
+  BEUTH_PROFILING_CHROME_EXPORT();
+  BEUTH_PROFILING_BEGIN_SESSION("profiling");
+  //constexpr Config config(1, 5760, 250, 1);
+  constexpr Config config(250, 250, 1, 1);
 
   // Check setup
   static_assert (config.minSize > 0, "Matrix 0x0 is not allowed (min size)");
@@ -61,5 +64,6 @@ int main(int, char**)
 
   std::cout << "Benchmark data successfully saved" << std::endl;
 
+  BEUTH_PROFILING_END_SESSION();
   return 0;
 }

@@ -12,7 +12,7 @@ namespace beuth {
     {
       public:
         explicit Section(const std::string& identifier, const std::string& categories, Observer* observer = nullptr);
-        virtual ~Section() = default;
+        virtual ~Section();
 
         void start();
         void stop();
@@ -23,6 +23,7 @@ namespace beuth {
         Stopwatch stopwatch;
         std::vector<Observer*> observers;
         std::string categories;
+        std::size_t depth;
     };
   }
 }

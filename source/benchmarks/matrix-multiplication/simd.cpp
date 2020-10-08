@@ -3,6 +3,7 @@
 #include <algorithm>
 #define BEUTH_MATH_USE_SIMD
 #include <matrix.hpp>
+#include <profiling.h>
 
 #include "randomizer.h"
 
@@ -11,6 +12,7 @@ Simd::Simd(const Config& config)
 {}
 
 void Simd::run() {
+  BEUTH_PROFILING_FUNCTION("benchmark,variant,execution");
   using Matrix = beuth::math::Matrix<float>;
 
   std::cout << "Simd(Benchmark)" << std::endl;

@@ -16,7 +16,7 @@ namespace beuth {
 
         virtual void beginSession(const std::string &name) override;
         virtual void endSession() override;
-        virtual void addEntry(const std::string &name, const std::string& categories, std::chrono::high_resolution_clock::time_point startTime, std::chrono::microseconds duration) override;
+        virtual void addEntry(const std::string &name, const std::string& categories, std::size_t depth, std::chrono::high_resolution_clock::time_point startTime, std::chrono::microseconds duration) override;
 
       protected:
         std::ofstream file;

@@ -7,6 +7,8 @@
 #include <memory>
 #include <vector>
 
+#include <profiling.h>
+
 #include "duration.h"
 #include "measurement.h"
 #include "variant.h"
@@ -64,12 +66,14 @@ class Benchmark
 template <typename TConfig>
 template <typename TVariant, typename... TArgs>
 inline typename Benchmark<TConfig>::variant_ptr_t Benchmark<TConfig>::addVariant(TArgs&&... args) {
+  BEUTH_PROFILING_FUNCTION("function,beuth,benchmark,allocation");
   variants.emplace_back(new TVariant(std::forward<TArgs>(args)...));
   return *(variants.end()-1);
 }
 
 template <typename TConfig>
 void Benchmark<TConfig>::run() {
+  BEUTH_PROFILING_FUNCTION("function,beuth,benchmark,execution");
   std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
 
   switch(behavior) {
@@ -108,6 +112,7 @@ inline const typename Benchmark<TConfig>::variants_t& Benchmark<TConfig>::getVar
 
 template <typename TConfig>
 void Benchmark<TConfig>::runSequential() {
+  BEUTH_PROFILING_FUNCTION("function,beuth,benchmark,execution,sequential");
   for(std::shared_ptr<Variant<TConfig>> variant : variants) {
     variant->setup();
     variant->run();
@@ -117,6 +122,7 @@ void Benchmark<TConfig>::runSequential() {
 
 template <typename TConfig>
 void Benchmark<TConfig>::runParallel() {
+  BEUTH_PROFILING_FUNCTION("function,beuth,benchmark,execution,parallel");
   for(std::shared_ptr<Variant<TConfig>> variant : variants) {
     variant->setup();
   }

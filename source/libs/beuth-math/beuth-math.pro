@@ -14,6 +14,10 @@ CONFIG += c++20
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
 
+# The follow define enables profiling for the math library. Disable
+# profiling by mark the define as commentary within this file.
+DEFINES += ENABLE_BEUTH_PROFILING
+
 # You can also make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
@@ -36,3 +40,10 @@ unix {
     target.path = /usr/lib
 }
 !isEmpty(target.path): INSTALLS += target
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../beuth-profiling/release/ -lbeuth-profiling
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../beuth-profiling/debug/ -lbeuth-profiling
+else:unix: LIBS += -L$$OUT_PWD/../beuth-profiling/ -lbeuth-profiling
+
+INCLUDEPATH += $$PWD/../beuth-profiling
+DEPENDPATH += $$PWD/../beuth-profiling

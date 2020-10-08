@@ -7,10 +7,10 @@ namespace beuth {
       return profiler;
     }
 
-    void Profiler::sectionFinished(const std::string &identifier, const std::string& categories, std::chrono::high_resolution_clock::time_point startTime, std::chrono::microseconds duration) {
+    void Profiler::sectionFinished(const std::string &identifier, const std::string& categories, std::size_t depth, std::chrono::high_resolution_clock::time_point startTime, std::chrono::microseconds duration) {
       for (Exporter* exporter : exporters) {
         if (exporter) {
-          exporter->addEntry(identifier, categories, startTime, duration);
+          exporter->addEntry(identifier, categories, depth, startTime, duration);
         }
       }
     }
