@@ -17,13 +17,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    beuththread.cpp
+    thread.cpp \
+    threadpool.cpp
 
 HEADERS += \
+    batch.hpp \
     beuth-thread_global.h \
-    beuththread.h \
-    thread.hpp \
-    thread_manager.hpp
+    counting-semaphore.hpp \
+    thread-manager.hpp \
+    thread.h \
+    threadpool.h
 
 # Default rules for deployment.
 unix {

@@ -4,7 +4,7 @@
 
 // custom library
 
-#include <thread_manager.hpp>
+#include <thread-manager.hpp>
 
 /*
 struct Job
@@ -60,17 +60,18 @@ struct Result
 
 using namespace std;
 
-
 int main(int, char**)
 {
+  using Threadpool = beuth::thread::Threadpool;
   using ThreadManager = beuth::thread::ThreadManager<Job,Result>;
   vector<Job> jobs = {Job(1,2), Job(0,4), Job(2,3), Job(5,5), Job(8,3)};
 
-  ThreadManager m(4, [](Job&& job) -> Result {
+  Threadpool pool(4);
+  ThreadManager m(pool, std::move(jobs), [](Job&& job) -> Result {
     return Result(job());
   });
 
-  vector<Result> result = m.processJobs(std::move(jobs));
+  vector<Result> result = m.execute();
 
   for (const Result &r : result)
   {
@@ -79,5 +80,6 @@ int main(int, char**)
 
   //[[maybe_unused]] int x = 5 + 8;
   //assert(x==13);
+
   return 0;
 }
