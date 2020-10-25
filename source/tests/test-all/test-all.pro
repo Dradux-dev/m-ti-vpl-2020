@@ -9,6 +9,12 @@ SOURCES += \
         ../test-math/matrix-mt.cpp \
         ../test-math/matrix-plain.cpp \
         ../test-thread/batch.cpp \
+        ../test-thread/counting-semaphore.cpp \
+        ../test-thread/thread-manager-job.cpp \
+        ../test-thread/thread-manager-jobresult.cpp \
+        ../test-thread/thread-manager.cpp \
+        ../test-thread/thread.cpp \
+        ../test-thread/threadpool.cpp \
         main.cpp
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../libs/beuth-thread/release/ -lbeuth-thread

@@ -7,7 +7,13 @@ QMAKE_CXXFLAGS +=-msse4.1
 
 SOURCES += \
         main.cpp \
-        batch.cpp
+        batch.cpp \
+        counting-semaphore.cpp \
+        thread-manager-job.cpp \
+        thread-manager-jobresult.cpp \
+        thread-manager.cpp \
+        thread.cpp \
+        threadpool.cpp
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../libs/beuth-thread/release/ -lbeuth-thread
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../libs/beuth-thread/debug/ -lbeuth-thread

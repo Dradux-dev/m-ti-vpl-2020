@@ -26,8 +26,6 @@ TEST_CASE("Batch", "[thread]") {
     ++finished;
   };
 
-
-
   auto alreadyFinished = [&](int amount) {
     return [&] {
       int finishedValue = 0;
@@ -57,5 +55,24 @@ TEST_CASE("Batch", "[thread]") {
     batch.process(alreadyFinished(1));
 
     batch.wait();
+  }
+
+  SECTION("wait") {
+    constexpr int TEST_COUNT = 100;
+    Batch batch(pool, TEST_COUNT);
+
+    for(int i = 0; i < TEST_COUNT; ++i) {
+      batch.process([&] {
+        // Only to ensure that finished is less than TEST_COUNT before wait
+        std::this_thread::sleep_for(std::chrono::milliseconds(4));
+
+        // Increment finished
+        fn();
+      });
+    }
+
+    REQUIRE(finished < TEST_COUNT);
+    batch.wait();
+    REQUIRE(finished == TEST_COUNT);
   }
 }
