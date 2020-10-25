@@ -11,8 +11,6 @@ TEST_CASE("Matrix Multi-Threading", "[math]") {
   using DataType = std::uint32_t;
 
   Threadpool pool(4);
-  std::this_thread::sleep_for(std::chrono::seconds(2));
-  std::cout << "Threadpool created ... " << std::endl;
 
   Matrix<DataType> m(pool, 3, 3);
   for (std::size_t x = 0; x < 3; ++x) {
@@ -55,10 +53,7 @@ TEST_CASE("Matrix Multi-Threading", "[math]") {
     b[1][0] = 1;
     b[1][1] = 4;
 
-    std::cout << "Adding soon ... " << std::endl;
     Matrix<DataType> r = a + b;
-    std::cout << "Adding finished ..." << std::endl;
-
     REQUIRE(r[0][0] == 9);
     REQUIRE(r[0][1] == 3);
     REQUIRE(r[1][0] == 4);
@@ -79,9 +74,7 @@ TEST_CASE("Matrix Multi-Threading", "[math]") {
 
     // r = a * b
     {
-      std::cout << "a * b soon ... " << std::endl;
       Matrix<DataType> r = a * b;
-      std::cout << "a * b finished ... " << std::endl;
       REQUIRE(r.getRows() == 1);
       REQUIRE(r.getColumns() == 1);
       REQUIRE(r[0][0] == 32);
@@ -89,9 +82,7 @@ TEST_CASE("Matrix Multi-Threading", "[math]") {
 
     // r = b * a
     {
-      std::cout << "b * a soon ... " << std::endl;
       Matrix<DataType> r = b * a;
-      std::cout << "b * a finished ... " << std::endl;
       REQUIRE(r.getRows() == 3);
       REQUIRE(r.getColumns() == 3);
 
@@ -115,9 +106,7 @@ TEST_CASE("Matrix Multi-Threading", "[math]") {
     row[0][1] = 1;
     row[0][2] = 1;
 
-    std::cout << "Each row adding soon ..." << std::endl;
     Matrix<DataType> r = Matrix<DataType>::each_row(m) + row;
-    std::cout << "Each row adding finished ..." << std::endl;
     REQUIRE(r.getRows() == 3);
     REQUIRE(r.getColumns() == 3);
 
@@ -140,9 +129,7 @@ TEST_CASE("Matrix Multi-Threading", "[math]") {
     row[1][0] = 1;
     row[2][0] = 1;
 
-    std::cout << "Each column adding soon ..." << std::endl;
     Matrix<DataType> r = Matrix<DataType>::each_column(m) + row;
-    std::cout << "Each column adding finished ..." << std::endl;
     REQUIRE(r.getRows() == 3);
     REQUIRE(r.getColumns() == 3);
 
