@@ -61,6 +61,9 @@ namespace beuth {
          * @param process The process that is able to perform a job and generated
          *                the correspondig result.
          *
+         * @test "ThreadManager (Result based)/job list" proves that the manager is working
+         *       correctly for a predefined job list.
+         *
          * @author Christian Haß
          */
         explicit inline ThreadManager(Threadpool& pool, std::vector<Job>&& jobs, Process proccess);
@@ -83,6 +86,8 @@ namespace beuth {
          *
          * @param job The job that shall be added to the list.
          *
+         * @test "ThreadManager (Result based)/job assigment" proves that the manager is performing every assigned job.
+         *
          * @author Christian Haß
          */
         inline void addJob(Job&& job);
@@ -101,6 +106,9 @@ namespace beuth {
          *            per thread. It may be required to add an order value
          *            to the job and the result to be able to sort the results
          *            after the execution.
+         *
+         * @test "ThreadManager (Result based)/blocking" proves that the execute() function is blocking until all
+         *       jobs have been completed.
          *
          * @author Christian Haß
          */
@@ -185,6 +193,9 @@ namespace beuth {
          * @param jobs List of jobs that shall be performed.
          * @param proccess Function that is able to perform a job.
          *
+         * @test "ThreadManager (Job based)/job list" proves that the manager is working
+         *       correctly for a predefined job list.
+         *
          * @author Christian Haß
          */
         explicit inline ThreadManager(Threadpool& pool, std::vector<Job>&& jobs, Process proccess);
@@ -207,6 +218,8 @@ namespace beuth {
          *
          * @param job The job that shall be added to the list.
          *
+         * @test "ThreadManager (Job based)/job assigment" proves that the manager is performing every assigned job.
+         *
          * @author Christian Haß
          */
         inline void addJob(Job&& job);
@@ -225,6 +238,9 @@ namespace beuth {
          *            per thread. It may be required to add an order value
          *            to the job and the result to be able to sort the results
          *            after the execution.
+         *
+         * @test "ThreadManager (Job based)/blocking" proves that the execute() function is blocking until all
+         *       jobs have been completed.
          *
          * @author Christian Haß
          */
@@ -302,6 +318,9 @@ namespace beuth {
          * @param pool The thread pool that shall be used.
          * @param jobs List of jobs that need to be performed.
          *
+         * @test "ThreadManager/job list" proves that the manager is working
+         *       correctly for a predefined job list.
+         *
          * @author Christian Haß
          */
         explicit inline ThreadManager(Threadpool& pool, std::vector<Process>&& jobs);
@@ -324,6 +343,8 @@ namespace beuth {
          *
          * @param job The job that shall be added to the list.
          *
+         * @test "ThreadManager/job assigment" proves that the manager is performing every assigned job.
+         *
          * @author Christian Haß
          */
         inline void addJob(Process job);
@@ -342,6 +363,9 @@ namespace beuth {
          *            per thread. It may be required to add an order value
          *            to the job and the result to be able to sort the results
          *            after the execution.
+         *
+         * @test "ThreadManager/blocking" proves that the execute() function is blocking until all
+         *       jobs have been completed.
          *
          * @author Christian Haß
          */
