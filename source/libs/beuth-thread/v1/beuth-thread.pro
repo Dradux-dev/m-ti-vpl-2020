@@ -4,7 +4,6 @@ TEMPLATE = lib
 DEFINES += BEUTHTHREAD_LIBRARY
 
 CONFIG += c++20
-CONFIG += object_parallel_to_source
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -19,9 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     thread.cpp \
-    threadpool.cpp \
-    v1/thread.cpp \
-    v1/threadpool.cpp
+    threadpool.cpp
 
 HEADERS += \
     batch.hpp \
@@ -29,18 +26,10 @@ HEADERS += \
     counting-semaphore.hpp \
     thread-manager.hpp \
     thread.h \
-    threadpool.h \
-    v1/batch.hpp \
-    v1/counting-semaphore.hpp \
-    v1/thread-manager.hpp \
-    v1/thread.h \
-    v1/threadpool.h
+    threadpool.h
 
 # Default rules for deployment.
 unix {
     target.path = /usr/lib
 }
 !isEmpty(target.path): INSTALLS += target
-
-SUBDIRS += \
-    v1/beuth-thread.pro

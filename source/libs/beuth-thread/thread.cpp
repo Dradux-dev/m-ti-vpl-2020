@@ -1,6 +1,6 @@
 #include "thread.h"
 
-#include "threadpool.h"
+#include <cassert>
 
 namespace beuth {
   namespace thread {
@@ -13,59 +13,51 @@ namespace beuth {
 
     void Thread::run()
     {
+        running.take();
+
         while(!shallStop)
         {
-            std::unique_lock<std::mutex> lock(sleepMutex);
-            sleepCondition.wait(lock, [this] {
-               // [Goal]
-               // Sleep Stop | r
-               //     0    0   1
-               //     0    1   1
-               //     1    0   0
-               //     1    1   1
-              std::lock_guard<std::mutex> shallSleeGuard(shallSleepMutex);
-               return this->shallStop || !this->shallSleep;
-               // [Current State]
-               // Sleep Stop | Stop !Sleep | f
-               //     0    0 |    0      1 | 1
-               //     0    1 |    1      1 | 1
-               //     1    0 |    0      0 | 0
-               //     1    1 |    1      0 | 1
-            });
+            BEUTH_THREAD_HISTORY("signalReady");
+            signalReady();
 
-            if (shallStop)
+            BEUTH_THREAD_HISTORY("waitForTask");
+            taskCount.take();
+
+            BEUTH_THREAD_HISTORY("gotTask");
+            ready.take();
+
+            BEUTH_THREAD_HISTORY("runTask");
+            if(shallStop)
             {
+                BEUTH_THREAD_HISTORY("shallStop");
                 continue;
             }
 
-            if(process)
-            {
-                busyMutex.try_lock();
-
-                processingStarted();
-                process();
-                processingFinished();
-
-                process = nullptr;
-                busyMutex.unlock();
-                busyCondition.notify_one();
+            try {
+              BEUTH_THREAD_HISTORY("performTask");
+#ifdef BEUTH_THREAD_ENABLE_DEBUG_HELPER
+              ++debug_helper.tasks.started;
+#endif
+              task();
+#ifdef BEUTH_THREAD_ENABLE_DEBUG_HELPER
+              ++debug_helper.tasks.performed;
+              debug_helper.taskPerformed = true;
+#endif
+            }
+            catch(std::future_error& e) {
+              std::cout << e.what() << std::endl;
             }
 
-            lock.unlock();
+            ready.give();
         }
 
-        busyMutex.unlock();
-        busyCondition.notify_one();
+        running.give();
     }
 
-    inline void Thread::processingStarted() {
-      isProcessing = true;
-      parent->processStarted(this);
-    }
-
-    inline void Thread::processingFinished() {
-      isProcessing = false;
-      parent->processFinished(this);
+    inline void Thread::signalReady() {
+      if (parent) {
+        parent->threadIsReady(this);
+      }
     }
   }
 }

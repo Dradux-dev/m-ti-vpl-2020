@@ -1,33 +1,53 @@
 #pragma once
 
+#include <atomic>
 #include <cmath>
 #include <condition_variable>
 #include <functional>
+#include <future>
 #include <iostream>
 #include <mutex>
 #include <queue>
+#include <string>
 #include <thread>
 #include <utility>
 #include <vector>
 
 #include "beuth-thread_global.h"
+#include "counting-semaphore.hpp"
+
+//#define BEUTH_THREAD_ENABLE_DEBUG_HELPER 1
+//#define BEUTH_THREAD_ENABLE_DEBUG_HISTORY 1
+
+#ifdef BEUTH_THREAD_ENABLE_DEBUG_HISTORY
+# define BEUTH_THREAD_HISTORY(message) history(message)
+#else
+# define BEUTH_THREAD_HISTORY(message)
+#endif
 
 namespace beuth {
   namespace thread {
     class BEUTHTHREAD_EXPORT Thread : public std::thread
     {
       public:
-        using lock_guard = std::lock_guard<std::mutex>;
-        using unique_lock = std::unique_lock<std::mutex>;
-        using Process = std::function<void(void)>;
+        struct Parent {
+          friend class Thread;
 
-        inline explicit Thread(class Threadpool* parent);
+          protected:
+            virtual void threadIsReady(Thread*) = 0;
+        };
+
+        using Process = std::function<void()>;
+        using Task = std::packaged_task<void()>;
+
+        inline explicit Thread(Parent* parent);
         virtual ~Thread();
 
         void run();
 
-        inline void wakeUp(Process process);
+        inline std::future<void> wakeUp(Process p);
         inline void waitForProcess();
+        inline void waitForStartup();
         inline void sleep();
         inline void sleepWhenDone();
         inline void forceStop();
@@ -38,39 +58,90 @@ namespace beuth {
         [[nodiscard]] inline bool isAvailable() const noexcept;
 
       protected:
-        inline void processingStarted();
-        inline void processingFinished();
+        inline void signalReady();
+
+        [[nodiscard]] inline bool isStopping() const noexcept;
+        [[nodiscard]] inline bool isRunning() const noexcept;
+        [[nodiscard]] inline bool hasTaskAssigned() const noexcept;
+        [[nodiscard]] inline bool isPerformingATask() const noexcept;
 
       private:
-        class Threadpool* parent = nullptr;
-        Process process = nullptr;
-        volatile bool isProcessing = false;
-        mutable std::mutex isProcessingMutex;
-        std::mutex sleepMutex;
-        std::condition_variable sleepCondition;
-        volatile bool shallSleep = true;
-        mutable std::mutex shallSleepMutex;
-        std::mutex busyMutex;
-        std::condition_variable busyCondition;
-        volatile bool shallStop = false;
+        Parent* parent = nullptr;
+        Task task = Task();
+
+        // true = shall stop; false = can stay alive
+        std::atomic_bool shallStop;
+
+        // 0 = is running; 1 = is not running
+        CountingSemaphore running;
+
+        // 0 = no task to perform; 1 = task to perform (including stopping)
+        CountingSemaphore taskCount;
+
+        // 0 = performing task; 1 = is not performing a task
+        CountingSemaphore ready;
+
+#ifdef BEUTH_THREAD_ENABLE_DEBUG_HELPER
+        struct {
+            bool shallStop;
+            bool running;
+            bool taskAssigned;
+            bool ready;
+            bool taskPerformed;
+            struct {
+                bool busy;
+                bool stopped;
+                bool available;
+                bool stopping;
+                bool running;
+                bool taskAssigned;
+                bool performingTask;
+            } functions;
+            struct {
+              volatile int assigned{0};
+              volatile int started{0};
+              volatile int performed{0};
+            } tasks;
+        } debug_helper;
+#endif
+
+#ifdef BEUTH_THREAD_ENABLE_DEBUG_HISTORY
+        std::mutex dbg_history_mutex;
+        std::vector<std::string> dbg_history;
+
+        inline void history(const char* s) {
+          std::lock_guard<std::mutex> guard(dbg_history_mutex);
+          if (dbg_history.size() >= 100) {
+            dbg_history.erase(dbg_history.begin());
+          }
+
+          dbg_history.emplace_back(s);
+        }
+#endif
     };
 
-    inline Thread::Thread(class Threadpool* parent)
+    inline Thread::Thread(Parent* parent)
       : std::thread(&Thread::run,this),
-        parent(parent)
+        parent(parent),
+        shallStop(false),
+        running(1),
+        taskCount(0),
+        ready(1)
     {
+#ifdef BEUTH_THREAD_ENABLE_DEBUG_HISTORY
+      std::lock_guard<std::mutex> guard(dbg_history_mutex);
+      dbg_history.reserve(100);
+#endif
     }
 
     [[nodiscard]] inline bool Thread::isBusy() const noexcept
     {
-        std::lock_guard<std::mutex> isProcessingGuard(isProcessingMutex);
-        std::lock_guard<std::mutex> shallSleeGuard(shallSleepMutex);
-        return isProcessing || !shallSleep;
+        return isPerformingATask() || hasTaskAssigned();
     }
 
     [[nodiscard]] inline bool Thread::isStopped() const noexcept
     {
-        return shallStop;
+        return !isRunning() && shallStop;
     }
 
     [[nodiscard]] inline bool Thread::isAvailable() const noexcept {
@@ -80,49 +151,77 @@ namespace beuth {
     inline void Thread::forceStop()
     {
         shallStop = true;
-        sleepCondition.notify_one();
+        taskCount.give();
     }
 
     inline void Thread::stop()
     {
         waitForProcess();
         shallStop = true;
-        sleepCondition.notify_one();
+        taskCount.give();
     }
 
-    inline void Thread::sleepWhenDone()
+    inline std::future<void> Thread::wakeUp(Process p)
     {
-        waitForProcess();
+        BEUTH_THREAD_HISTORY("wakeUp");
 
-        std::lock_guard<std::mutex> shallSleeGuard(shallSleepMutex);
-        shallSleep = true;
-    }
-
-    inline void Thread::sleep()
-    {
-        std::lock_guard<std::mutex> shallSleeGuard(shallSleepMutex);
-        shallSleep = true;
-        /// @todo test if really required
-        //sleepCondition.notify_one();
-    }
-
-    inline void Thread::wakeUp(Process process)
-    {
-        if (shallStop) {
-          return;
+        if (!p) {
+          return std::future<void>();
         }
 
-        this->process = process;
+        if (shallStop) {
+          return std::future<void>();
+        }
 
-        std::lock_guard<std::mutex> shallSleeGuard(shallSleepMutex);
-        shallSleep = false;
-        sleepCondition.notify_one();
+#ifdef BEUTH_THREAD_ENABLE_DEBUG_HELPER
+        debug_helper = {
+          .shallStop = shallStop,
+          .running = isRunning(),
+          .taskAssigned = (static_cast<std::ptrdiff_t>(taskCount) > 0),
+          .ready = (static_cast<std::ptrdiff_t>(taskCount) > 0),
+          .taskPerformed = false,
+          .functions = {
+            .busy = isBusy(),
+            .stopped = isStopped(),
+            .available = isAvailable(),
+            .stopping = isStopping(),
+            .running = isRunning(),
+            .taskAssigned = hasTaskAssigned(),
+            .performingTask = isPerformingATask()
+          },
+          .tasks = debug_helper.tasks
+        };
+
+        ++debug_helper.tasks.assigned;
+#endif
+
+        this->task = std::packaged_task<void()>(p);
+        taskCount.give();
+
+        return task.get_future();
     }
 
     inline void Thread::waitForProcess()
     {
-        unique_lock lk(busyMutex);
-        busyCondition.wait(lk, [this] { return !this->isBusy(); });
+      ready.wait([](std::ptrdiff_t count) -> bool {
+        return count > 0;
+      });
+    }
+
+    [[nodiscard]] inline bool Thread::isStopping() const noexcept {
+      return shallStop;
+    }
+
+    [[nodiscard]] inline bool Thread::isRunning() const noexcept {
+      return static_cast<std::ptrdiff_t>(running) == 0;
+    }
+
+    [[nodiscard]] inline bool Thread::hasTaskAssigned() const noexcept {
+      return static_cast<std::ptrdiff_t>(taskCount) > 0;
+    }
+
+    [[nodiscard]] inline bool Thread::isPerformingATask() const noexcept {
+      return static_cast<std::ptrdiff_t>(ready) == 0;
     }
   }
 }

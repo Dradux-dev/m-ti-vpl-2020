@@ -1,7 +1,7 @@
 #include "nosimd.h"
 
 #include <algorithm>
-#include <matrix.hpp>
+#include <matrix-plain.hpp>
 #include <profiling.h>
 
 #include "randomizer.h"

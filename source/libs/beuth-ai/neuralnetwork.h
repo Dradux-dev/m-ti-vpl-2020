@@ -2,7 +2,7 @@
 
 #include <functional>
 
-#include "../beuth-math/matrix.hpp"
+#include "../beuth-math/matrix-plain.hpp"
 
 namespace beuth {
   namespace ai {

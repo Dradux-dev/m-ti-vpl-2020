@@ -9,8 +9,6 @@
 
 namespace beuth {
   namespace thread {
-    static std::mutex ioGuard;
-
     struct CountingSemaphore {
       public:
         using lock_type = std::unique_lock<std::mutex>;
@@ -61,7 +59,10 @@ namespace beuth {
             return;
           }
 
-          count += n;
+          {
+            lock_type l = lock_type(m);
+            count += n;
+          }
           cv.notify_all();
         }
 
@@ -71,8 +72,15 @@ namespace beuth {
             return;
           }
 
-          count -= n;
+          {
+            lock_type l = lock_type(m);
+            count -= n;
+          }
           cv.notify_all();
+        }
+
+        inline operator std::ptrdiff_t() const {
+          return count;
         }
 
       protected:

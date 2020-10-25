@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <future>
 
 #include "beuth-thread_global.h"
 
@@ -9,16 +10,14 @@
 
 namespace beuth {
   namespace thread {
-    class BEUTHTHREAD_EXPORT Threadpool {
+    class BEUTHTHREAD_EXPORT Threadpool : public Thread::Parent {
       public:
-        friend class Thread;
-
-        using Process = Thread::Process;
+        using Process = std::function<void()>;
 
         explicit inline Threadpool(std::size_t count);
         virtual ~Threadpool();
 
-        Thread* process(Process p);
+        std::future<void> process(Process p);
         void process(std::vector<Process>&& vp);
 
         inline void stop();
@@ -27,21 +26,27 @@ namespace beuth {
         [[nodiscard]] inline std::size_t getSize() const noexcept;
 
       protected:
-        inline void processStarted(Thread* thread);
-        inline void processFinished(Thread* thread);
-        inline void waitForThread();
+        inline virtual void threadIsReady(Thread* thread) override;
+        inline void waitForThread(std::size_t amount = 1);
+        [[nodiscard]] inline Thread* getAvailableThread() noexcept;
 
       protected:
-        std::vector<Thread*> threads;
         CountingSemaphore threadsAvailable;
+
+        std::vector<Thread*> threads;
+
+        std::mutex availableMutex;
+        std::queue<Thread*> available;
     };
 
     inline Threadpool::Threadpool(std::size_t count)
-      : threadsAvailable(count)
+      : threadsAvailable(0)
     {
       threads.reserve(count);
+
       for (std::size_t n = 0; n < count; ++n) {
-        threads.emplace_back(new Thread(this));
+        Thread* thread = new Thread(this);
+        threads.emplace_back(thread);
       }
     }
 
@@ -61,19 +66,27 @@ namespace beuth {
       return threads.size();
     }
 
-    inline void Threadpool::processStarted(Thread*) {
-      threadsAvailable.reduce();
-    }
+    inline void Threadpool::threadIsReady(Thread* thread) {
+      {
+        std::lock_guard<std::mutex> guard(availableMutex);
+        available.push(thread);
+      }
 
-    inline void Threadpool::processFinished(Thread* thread) {
-      thread->sleep();
       threadsAvailable.give();
     }
 
-    inline void Threadpool::waitForThread() {
-      threadsAvailable.wait([](std::ptrdiff_t count) -> bool {
-        return count >= 1;
-      });
+    inline void Threadpool::waitForThread(std::size_t amount) {
+      threadsAvailable.take(amount);
+    }
+
+    [[nodiscard]] inline Thread* Threadpool::getAvailableThread() noexcept {
+      waitForThread();
+
+      std::lock_guard<std::mutex> guard(availableMutex);
+      Thread* thread = available.front();
+      available.pop();
+
+      return thread;
     }
   }
 }

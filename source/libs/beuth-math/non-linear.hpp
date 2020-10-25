@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cmath>
-#include "matrix.hpp"
+#include "matrix-plain.hpp"
 
 namespace beuth {
   namespace math {

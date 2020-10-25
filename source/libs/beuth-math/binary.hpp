@@ -1,6 +1,6 @@
 #pragma once
 
-#include "matrix.hpp"
+#include "matrix-plain.hpp"
 
 namespace beuth {
   namespace math {

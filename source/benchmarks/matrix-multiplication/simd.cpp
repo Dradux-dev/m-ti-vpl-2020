@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #define BEUTH_MATH_USE_SIMD
-#include <matrix.hpp>
+#include <matrix-plain.hpp>
 #include <profiling.h>
 
 #include "randomizer.h"

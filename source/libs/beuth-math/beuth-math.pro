@@ -31,6 +31,12 @@ HEADERS += \
     beuthmath.h \
     binary.hpp \
     linear.hpp \
+    matrix-mt-blocks.hpp \
+    matrix-mt.hpp \
+    matrix-plain.hpp \
+    matrix-simd-mt-blocks.hpp \
+    matrix-simd-mt.hpp \
+    matrix-simd.hpp \
     matrix.hpp \
     non-linear.hpp \
     simd.hpp
@@ -47,3 +53,10 @@ else:unix: LIBS += -L$$OUT_PWD/../beuth-profiling/ -lbeuth-profiling
 
 INCLUDEPATH += $$PWD/../beuth-profiling
 DEPENDPATH += $$PWD/../beuth-profiling
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../beuth-thread/release/ -lbeuth-thread
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../beuth-thread/debug/ -lbeuth-thread
+else:unix: LIBS += -L$$OUT_PWD/../beuth-thread/ -lbeuth-thread
+
+INCLUDEPATH += $$PWD/../beuth-thread
+DEPENDPATH += $$PWD/../beuth-thread

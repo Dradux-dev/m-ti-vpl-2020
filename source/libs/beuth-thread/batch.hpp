@@ -5,56 +5,58 @@
 
 namespace beuth {
   namespace thread {
+    /**
+     * @brief Batch of multi threading tasks
+     *
+     * Will assign tasks to a thread pool as long as threads are available. If no thread is currently available the batch will block
+     * the calling thread until a thread is available for the new task.
+     *
+     * @author Tarek Schwarzinger
+     */
     class Batch {
       public:
+        /// Process function pointer signature
         using Process = Threadpool::Process;
 
+        /**
+         * @brief Constructor
+         *
+         * Constructs a batch.
+         *
+         * @param pool The thread pool that shall be used for assigning tasks.
+         * @param size The amount of tasks, that will get assigned. If already known at batch creation.
+         *
+         * @attention Assigning the correct size in the constructor will save runtime, due to no
+         *            resize required.
+         *
+         * @author Tarek Schwarzinger
+         */
         inline explicit Batch(Threadpool& pool, std::size_t size = 100)
           : pool(pool)
         {
           states.reserve(size);
         }
 
-        inline void done(std::size_t n) {
-          std::lock_guard<std::mutex> guard(m);
-          states[n] = nullptr;
-        }
-
         inline void process(Process p) {
-          Thread* thread = nullptr;
-          do {
-            std::size_t n = states.size();
-
-            thread = pool.process([this, p, n] {
-              if (p) {
-                p();
-              }
-
-              this->done(n);
-            });
-
-            if (thread) {
-              std::lock_guard<std::mutex> guard(m);
-              states.emplace_back(thread);
+            if (!p) {
+              return;
             }
-          } while (!thread);
+
+            states.emplace_back(pool.process(p));
         }
 
         inline void wait() {
-          m.lock();
-          for (Thread* thread : states) {
-            if (thread) {
-              m.unlock();
-              thread->waitForProcess();
-              m.lock();
-            }
+          for (std::future<void>& f : states) {
+            f.wait();
           }
-          m.unlock();
         }
+
       protected:
+        /// Reference to the used thread pool
         Threadpool& pool;
-        std::mutex m;
-        std::vector<Thread*> states;
+
+        /// State of used threads to process tasks
+        std::vector<std::future<void>> states;
     };
 
     template <typename TJob, typename TResult>
@@ -66,11 +68,15 @@ namespace beuth {
 
       for (std::size_t n = 0; n < jobs.size(); ++n) {
         batch.process([&resultLock, &result, &processor, &jobs, n] {
+//          std::cout << "Task started" << std::flush << std::endl;
+//          std::cout << "S" << std::flush;
           TResult r = processor(std::move(jobs[n]));
 
           resultLock.lock();
           result.emplace_back(std::move(r));
           resultLock.unlock();
+//          std::cout << "Task finished" << std::flush << std::endl;
+//          std::cout << "F" << std::flush;
         });
       }
 

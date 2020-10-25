@@ -3,7 +3,7 @@
 #include <fstream>
 #include <limits>
 
-#include <matrix.hpp>
+#include <matrix-plain.hpp>
 
 #include "benchmark.h"
 #include "config.h"

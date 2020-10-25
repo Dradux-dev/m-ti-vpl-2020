@@ -1,5 +1,9 @@
 #include "threadpool.h"
 
+#include <cassert>
+#include <iomanip>
+#include <iostream>
+
 #include "batch.hpp"
 
 namespace beuth {
@@ -12,17 +16,10 @@ namespace beuth {
       }
     }
 
-    Thread* Threadpool::process(Process p) {
-      waitForThread();
-
-      for(Thread* t : threads) {
-        if (t->isAvailable()) {
-          t->wakeUp(p);
-          return t;
-        }
-      }
-
-      return nullptr;
+    std::future<void> Threadpool::process(Process p) {
+      Thread* thread = getAvailableThread();
+      assert(thread);
+      return thread->wakeUp(p);
     }
 
     void Threadpool::process(std::vector<Process>&& vp) {
