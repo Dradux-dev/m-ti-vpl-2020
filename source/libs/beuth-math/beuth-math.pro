@@ -23,12 +23,10 @@ DEFINES += ENABLE_BEUTH_PROFILING
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-SOURCES += \
-    beuthmath.cpp
+SOURCES +=
 
 HEADERS += \
     beuth-math_global.h \
-    beuthmath.h \
     binary.hpp \
     linear.hpp \
     matrix-mt-blocks.hpp \

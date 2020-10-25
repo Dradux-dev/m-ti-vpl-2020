@@ -92,7 +92,7 @@ namespace beuth {
      * @author Tarek Schwarzinger
      */
     template <typename TJob, typename TResult>
-    std::vector<TResult> batch(Threadpool& pool, std::vector<TJob>&& jobs, std::function<TResult(TJob&&)> processor) {
+    static std::vector<TResult> batch(Threadpool& pool, std::vector<TJob>&& jobs, std::function<TResult(TJob&&)> processor) {
       std::mutex resultLock;
       std::vector<TResult> result;
 
@@ -126,7 +126,7 @@ namespace beuth {
      * @author Tarek Schwarzinger
      */
     template <typename TJob>
-    void batch(Threadpool& pool, std::vector<TJob>&& jobs, std::function<void(TJob&&)> processor) {
+    static void batch(Threadpool& pool, std::vector<TJob>&& jobs, std::function<void(TJob&&)> processor) {
       Batch batch(pool);
 
       for(TJob& job : jobs) {
@@ -148,7 +148,7 @@ namespace beuth {
      *
      * @author Tarek Schwarzinger
      */
-    void batch(Threadpool& pool, std::vector<std::function<void()>>&& jobs) {
+    static void batch(Threadpool& pool, std::vector<std::function<void()>>&& jobs) {
       Batch batch(pool);
 
       for(std::function<void()> job : jobs) {
