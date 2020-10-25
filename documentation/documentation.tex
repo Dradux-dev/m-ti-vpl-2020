@@ -1,14 +1,17 @@
 \documentclass[11pt, a4paper, oneside]{book}
 
-%\pagestyle{headandfoot}
-
 \include{packages}
-%\include{commands}
-
-%\bibliographystyle{unsrt}
 
 \graphicspath{
   {BilderPDF/}
+}
+
+%% Fügt Abbildungsverzeichnis, Tabellenverzeichnis und Quellenverzeichnis der Gliederung hinzu
+\renewcommand*{\listoffigures}{%
+  \begingroup
+  %\tocchapter
+  \tocfile{\listfigurename}{lof}
+  \endgroup
 }
 
 \include{cover}
@@ -39,9 +42,14 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% HAUPTINHALT%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \pagenumbering{arabic}
 
-%% Zielsetzung
-\include{zielsetzung}
+%% Kaptiel - Einleitung
+\include{introduction}
 
+%% Kapitel - Implementierung
+\include{implementation}
+
+%% Kapitel - Auswertung / Evaluation
+\include{evaluation}
 
 %% LITERATURVERZEICHNIS
 \bibliographystyle{unsrt}
