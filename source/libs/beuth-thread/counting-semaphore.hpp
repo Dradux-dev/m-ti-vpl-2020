@@ -61,6 +61,17 @@ namespace beuth {
          * @attention This is a blocking call, that will wait until the full amount n could
          *            be taken from the counter.
          *
+         * @test "CountingSemaphore/instant" proves, that the take() function ends
+         *       immediately, if the required count is already available.
+         * @test "CountingSemaphore/blocking" proves, that the take() function is
+         *       blocking until the required count is available.
+         * @test "CountingSemaphore/take multiple" proves, that the take() function is
+         *       blocking until the full amount is available. It also proves, that
+         *       the take function is reserving count as soon as it gets
+         *       available, even if only partially.
+         * @test "CountingSemaphore/remaining" proves, that the take() function is
+         *        only reserving the required amount and not more.
+         *
          * @authors Christian Haß, Tarek Schwarzinger
          */
         void take( std::size_t n=1 ) {
@@ -92,6 +103,10 @@ namespace beuth {
          *
          * @attention This is a blocking call, that will wait until the predicate
          *            is fullfilled.
+         *
+         * @test "CountingSemaphore/wait" proves that the wait function is blocking
+         *       until the required count condition is met, without changing the
+         *       count value.
          *
          * @authors Christian Haß, Tarek Schwarzinger
          */

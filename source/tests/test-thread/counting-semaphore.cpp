@@ -19,13 +19,13 @@ TEST_CASE("CountingSemaphore", "[thread]") {
     counter.take();
   };
 
-  SECTION("Instant") {
+  SECTION("instant") {
     give();
     take();
     REQUIRE(counter == 0);
   }
 
-  SECTION("Blocking") {
+  SECTION("blocking") {
     Batch batch(pool, 2);
 
     batch.process([&] {
@@ -42,7 +42,7 @@ TEST_CASE("CountingSemaphore", "[thread]") {
     REQUIRE(counter == 0);
   }
 
-  SECTION("Take Multiple") {
+  SECTION("take multiple") {
     Batch batch(pool, 3);
 
     batch.process([&] {
@@ -56,6 +56,7 @@ TEST_CASE("CountingSemaphore", "[thread]") {
     });
 
     batch.process([&] {
+      REQUIRE(counter == 0);
       std::this_thread::sleep_for(std::chrono::milliseconds(20));
       give();
     });
@@ -64,7 +65,7 @@ TEST_CASE("CountingSemaphore", "[thread]") {
     REQUIRE(counter == 0);
   }
 
-  SECTION("Remaining") {
+  SECTION("remaining") {
     give();
     give();
 
@@ -72,7 +73,7 @@ TEST_CASE("CountingSemaphore", "[thread]") {
     REQUIRE(counter == 1);
   }
 
-  SECTION("Wait") {
+  SECTION("wait") {
     Batch batch(pool, 2);
 
     batch.process([&] {
