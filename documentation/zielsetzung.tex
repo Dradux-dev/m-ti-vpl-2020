@@ -1,14 +1,14 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Zielsetzung %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section*{\LARGE\textbf{Zielsetzung}}
+\chapter{Zielsetzung}
 
 In dem Projekt soll ein neuronales Netz zur Erkennung von Objekten entwickelt werden. Dieses neuronale Netz soll auf verschiedenen Systemen zum Vergleich der Performance genutzt werden. Dabei soll bei der Konzeption und Entwicklung darauf geachtet werden, ein realitätsnahes Beispiel umzusetzen.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Anwendungsbeispiele %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section*{\LARGE\textbf{Anwendungsbeispiele}}
+\section{Anwendungsbeispiele}
 
 In dem Anwendungsbeispiel soll mit Hilfe eines Fotos eines Tieres dessen Tierart bestimmt werden. 
 
@@ -32,14 +32,14 @@ Diese Anwendung ist nur exemplarisch und kein Teil der Umsetzung des Projektes.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Systeme %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section*{\LARGE\textbf{Systeme}}
+\section{Systeme}
 
 Im Zuge dieser Projektarbeit sollen verschiedene technische Realisierungen miteinander verglichen werden. Die relevanten Messdaten sind die Datenmenge gegen die benötigte Rechenzeit. Der Vergleich ist grundlegend auf vier verschiedene Hardwareplattformen beschränkt.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CPU %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section*{\LARGE\textbf{CPU}}
+\section{CPU}
 
 Die wohl simpelste Realisierung ist die Entwicklung einer regulären PC Anwendung. Diese lädt das Foto vom verfügbaren Massenspeicher und überträgt dieses an das in der Anwendung implementierte Neuronale Netz. Die Auswertung der Ausgangs Neuronen kann somit auch lokal geschehen. 
 
@@ -57,7 +57,7 @@ Um den Einfluss durch andere parallel laufende Anwendungen gering zu halten, ist
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FPGA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section*{\LARGE\textbf{FPGA}}
+\section{FPGA}
 
 Eine weitere Möglichkeit ist die Anbindung eines FPGAs an die CPU. Dieser FPGA wäre dann hochspezialisiert auf die Ausführung des neuronalen Netzes zur Erkennung der Tiere. Dafür muss die CPU wie gehabt, das Bild von einem Massenspeicher laden und anschließend an den FPGA übertragen. Das übertragene Bild wird von dem FPGA ausgewertet und das Ergebnis der Auswertung zurück an die CPU übertragen. 
 
@@ -71,7 +71,7 @@ Eine weitere Möglichkeit ist die Anbindung eines FPGAs an die CPU. Dieser FPGA 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TPU %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section*{\LARGE\textbf{TPU}}
+\section{TPU}
 
 Der Vergleich wäre ohne aktuelle Domain Specific Architectures unvollständig. Daher soll dieser exemplarische Anwendungsfall auch auf einer Tensor Processing Unit (TPU) getestet werden. Auch hierfür wird das Foto des Tieres von der CPU von einem Massenspeicher geladen. Das geladene Foto wird an die TPU übertragen und von dieser verarbeitet. Die erhaltenen Resultate werden anschließend zur weiteren Verarbeitung an die CPU übermittelt.
 
@@ -85,7 +85,7 @@ Der Vergleich wäre ohne aktuelle Domain Specific Architectures unvollständig. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GPU %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section*{\LARGE\textbf{GPU}}
+\section{GPU}
 
 Im ersten Schritt ist es notwendig mittels CPU das Bild von dem Massenspeichergerät zu lesen. Im Anschluss wird das Bild von der CPU an die Grafikkarte über den verbundenen Bus übertragen. Nun berechnet das in der GPU befindliche neuronale Netz die Wahrscheinlichkeitswerte für alle definierten Tierarten. Nach Abschluss der Auswertung übermittelt die GPU das Ergebnis zurück an die CPU. Diese können dann weiter aufbereitet werden oder über eine entsprechende Schnittstelle weiter kommuniziert werden. 
 
@@ -100,7 +100,7 @@ Dies setzt eine Implementierung des neuronalen Netzes auf der GPU voraus.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Zeitmessung %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section*{\LARGE\textbf{Zeitmessung}}
+\section{Zeitmessung}
 
 Die Messung der benötigten Zeit zur Auswertung ist ein essentieller Bestandteil des Projektes. Die Zeit wird für jedes System von der CPU gemessen. Die Zeitmessung beginnt ab dem Start der Übertragung des Fotos und endet mit dem vollständigen Empfang des Ergebnisses. Diese Zeitspanne ist per Definition die Auswertungszeit, welche die vollständige Bearbeitung des Auftrages enthält. Beginnend bei der Auftragserstellung (Start der Übertragung des Fotos) und dem Abschluss des Auftrages (Empfang der Ergebnisse). Dies ist für die Zeitmessung grob vereinfacht wie ein Funktionsaufruf aus Sicht der CPU,  genauer gesagt ein Remote Procedure Call (RPC). Der Beginn der Übertragung würde dann dem bereitstellen der Parameter entsprechen und das Erhalten der Ergebnisse wäre vergleichbar mit dem Rücksprung.
 
@@ -108,12 +108,12 @@ Die Messung der benötigten Zeit zur Auswertung ist ein essentieller Bestandteil
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Kriterien %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section*{\LARGE\textbf{Kriterien}}
+\section{Kriterien}
 
 \vspace{0.8cm}
 
 
-\subsection*{\Large\textbf{Muss-Kriterien}}
+\subsection{Muss-Kriterien}
 
 \vspace{0.5cm}
 
@@ -126,7 +126,7 @@ Die Messung der benötigten Zeit zur Auswertung ist ein essentieller Bestandteil
 \vspace{0.8cm}
 
 
-\subsection*{\Large\textbf{Kann-Kriterien}}
+\subsection{Kann-Kriterien}
 
 \vspace{0.5cm}
 
@@ -138,7 +138,7 @@ Die Messung der benötigten Zeit zur Auswertung ist ein essentieller Bestandteil
 \vspace{0.8cm}
 
 
-\subsection*{\Large\textbf{Ausschlusskriterien}}
+\subsection{Ausschlusskriterien}
 
 \vspace{0.5cm}
 
@@ -155,7 +155,7 @@ Die Messung der benötigten Zeit zur Auswertung ist ein essentieller Bestandteil
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bildmaterial %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section*{\LARGE\textbf{Bildmaterial}}
+\section{Bildmaterial}
 
 Im folgenden sind exemplarisch Bilder aufgeführt, die für die Auswertung zulässig bzw. unzulässig wären. \\
 
@@ -196,3 +196,5 @@ Im folgenden sind exemplarisch Bilder aufgeführt, die für die Auswertung zulä
 	\caption{Tiger verdeckt \cite{tiger_verdeckt}}
 	\label{fig:tiger_04}
 \end{figure}
+
+\newpage

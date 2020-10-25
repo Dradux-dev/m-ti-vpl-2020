@@ -1,26 +1,47 @@
-\documentclass[addpoints,11pt]{exam}
+\documentclass[11pt, a4paper]{book}
 
-\pagestyle{headandfoot}
+%\pagestyle{headandfoot}
 
 \include{packages}
-\include{commands}
+%\include{commands}
 
-\bibliographystyle{unsrt}
+%\bibliographystyle{unsrt}
 
-\begin{document}
+\graphicspath{
+  {BilderPDF/}
+}
 
 \include{cover}
 
-\addtocounter{page}{1}
-%Redefine question apperance
-\qformat{\large\textbf{Aufgabe \thequestion} \hfill (\thepoints)}
-\renewcommand{\baselinestretch}{1.5}
-\setlength{\bigskipamount}{20pt}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ANFANG DOKUMENT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
 
+\pagestyle{fancy}
+\pagenumbering{off}
+%% Titelseite erstellen, basierend auf Inhalten von "cover.tex"
+\maketitle
+
+%% Inhaltsverzeichnis
+\pagenumbering{Roman}
+\setcounter{page}{0}
+\tableofcontents
+
+%% Abbildungsverzeichnis
+\listoffigures
+
+%% Tabellenverzeichnis
+\listoftables 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% HAUPTINHALT%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagenumbering{arabic}
+
+
+%% Zielsetzung
 \include{zielsetzung}
 
-\newpage
 
+%% LITERATURVERZEICHNIS
+\bibliographystyle{unsrt}
 \bibliography{literatur}
 
 \end{document}
