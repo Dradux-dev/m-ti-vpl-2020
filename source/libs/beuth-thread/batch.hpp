@@ -37,6 +37,15 @@ namespace beuth {
           states.reserve(size);
         }
 
+        /**
+         * @brief Start process
+         *
+         * Takes a process and assigns it to the thread pool.
+         *
+         * @param p The process that shall be executed in it's own thread.
+         *
+         * @author Tarek Schwarzinger
+         */
         inline void process(Process p) {
             if (!p) {
               return;
@@ -45,6 +54,13 @@ namespace beuth {
             states.emplace_back(pool.process(p));
         }
 
+        /**
+         * @brief wait
+         *
+         * Waits for all processes of this batch to finish.
+         *
+         * @author Tarek Schwarzinger
+         */
         inline void wait() {
           for (std::future<void>& f : states) {
             f.wait();
@@ -59,6 +75,22 @@ namespace beuth {
         std::vector<std::future<void>> states;
     };
 
+    /**
+     * @brief batch
+     *
+     * Creates a batch from a job list and takes care of the result management.
+     *
+     * @tparam TJob Type of the job structure.
+     * @tparam TResult Type of the result structure.
+     *
+     * @param pool The thread pool that shall get the jobs assigned.
+     * @param jobs List of the jobs that shall be performed.
+     * @param processor Function that can perform a job to create the corresponding result out of it.
+     *
+     * @return Returns the list of results, that have been created for the jobs.
+     *
+     * @author Tarek Schwarzinger
+     */
     template <typename TJob, typename TResult>
     std::vector<TResult> batch(Threadpool& pool, std::vector<TJob>&& jobs, std::function<TResult(TJob&&)> processor) {
       std::mutex resultLock;
@@ -68,15 +100,11 @@ namespace beuth {
 
       for (std::size_t n = 0; n < jobs.size(); ++n) {
         batch.process([&resultLock, &result, &processor, &jobs, n] {
-//          std::cout << "Task started" << std::flush << std::endl;
-//          std::cout << "S" << std::flush;
           TResult r = processor(std::move(jobs[n]));
 
           resultLock.lock();
           result.emplace_back(std::move(r));
           resultLock.unlock();
-//          std::cout << "Task finished" << std::flush << std::endl;
-//          std::cout << "F" << std::flush;
         });
       }
 
@@ -84,6 +112,19 @@ namespace beuth {
       return std::move(result);
     }
 
+    /**
+     * @brief batch
+     *
+     * Takes a list ob jobs, that does not generate a result and performs those concurrently.
+     *
+     * @tparam TJob Type of the job structure.
+     *
+     * @param pool The thread pool that shall be used to perform the jobs.
+     * @param jobs The list of jobs, that shall be performed.
+     * @param processor Function that is able to perform a job.
+     *
+     * @author Tarek Schwarzinger
+     */
     template <typename TJob>
     void batch(Threadpool& pool, std::vector<TJob>&& jobs, std::function<void(TJob&&)> processor) {
       Batch batch(pool);
@@ -97,6 +138,16 @@ namespace beuth {
       batch.wait();
     }
 
+    /**
+     * @brief batch
+     *
+     * Takes a list of functions and performs those concurrently.
+     *
+     * @param pool The thread pool, that shall be used to perform the jobs.
+     * @param jobs List of functions, that has to be performed concurrently.
+     *
+     * @author Tarek Schwarzinger
+     */
     void batch(Threadpool& pool, std::vector<std::function<void()>>&& jobs) {
       Batch batch(pool);
 
