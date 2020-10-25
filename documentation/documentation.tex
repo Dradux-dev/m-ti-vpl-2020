@@ -1,4 +1,4 @@
-\documentclass[11pt, a4paper]{book}
+\documentclass[11pt, a4paper, oneside]{book}
 
 %\pagestyle{headandfoot}
 
@@ -21,20 +21,23 @@
 %% Titelseite erstellen, basierend auf Inhalten von "cover.tex"
 \maketitle
 
-%% Inhaltsverzeichnis
 \pagenumbering{Roman}
 \setcounter{page}{0}
+
+%% Inhaltsverzeichnis
 \tableofcontents
+\newpage
 
 %% Abbildungsverzeichnis
 \listoffigures
+\newpage
 
 %% Tabellenverzeichnis
-\listoftables 
+\listoftables
+\newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% HAUPTINHALT%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \pagenumbering{arabic}
-
 
 %% Zielsetzung
 \include{zielsetzung}
