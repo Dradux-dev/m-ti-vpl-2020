@@ -56,6 +56,12 @@ namespace beuth {
          *            be ready for a new task, if no thread was available when
          *            this function was called.
          *
+         * @test "Threadpool/parallel execution" proves that the thread pool is
+         *       capable of executing tasks parallel as long as threads are
+         *       available for the execution.
+         * @test "Threadpool/blocking" proves that the thread pool is blocking
+         *       as soon as no thread is available for the process \p p.
+         *
          * @author Tarek Schwarzinger
          */
         std::future<void> process(Process p);
@@ -69,6 +75,9 @@ namespace beuth {
          *
          * @attention This is blocking call, which will wait until all process have
          *            been assigned and completely performed.
+         *
+         * @test "Threadpool/process list" proves that this function is blocking
+         *       until all processes have been completed.
          *
          * @author Tarek Schwarzinger
          */
