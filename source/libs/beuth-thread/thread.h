@@ -177,6 +177,9 @@ namespace beuth {
          * @retval true The thread is currently busy.
          * @retval false The thread has no current task.
          *
+         * @test "Thread/busy" proves that the is busy function
+         *       returns true, if the thread has a task assigned.
+         *
          * @author Tarek Schwarzinger
          */
         [[nodiscard]] inline bool isBusy() const noexcept;
@@ -210,6 +213,10 @@ namespace beuth {
          *            to wait for the signal to it's parent, that the thread is
          *            ready for a new job.
          *
+         * @test "Thread/available" proves that the thread is not available while
+         *       performing a task and that the thread is available, after the task
+         *       has been finished.
+         *
          * @see signalReady()
          *
          * @author Tarek Schwarzinger
@@ -223,6 +230,8 @@ namespace beuth {
          * Signals it's parent, that this thread is ready to get a new task assigned.
          *
          * @see Parent::threadIsReady()
+         *
+         * @test "Thread/ready" proves that signalling ready of the thread works as intended.
          *
          * @author Tarek Schwarzinger
          */

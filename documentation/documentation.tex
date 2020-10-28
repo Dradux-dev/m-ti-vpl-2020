@@ -1,14 +1,17 @@
-\documentclass[11pt, a4paper]{book}
-
-%\pagestyle{headandfoot}
+\documentclass[11pt, a4paper, oneside]{book}
 
 \include{packages}
-%\include{commands}
-
-%\bibliographystyle{unsrt}
 
 \graphicspath{
   {BilderPDF/}
+}
+
+%% Fügt Abbildungsverzeichnis, Tabellenverzeichnis und Quellenverzeichnis der Gliederung hinzu
+\renewcommand*{\listoffigures}{%
+  \begingroup
+  %\tocchapter
+  \tocfile{\listfigurename}{lof}
+  \endgroup
 }
 
 \include{cover}
@@ -21,24 +24,32 @@
 %% Titelseite erstellen, basierend auf Inhalten von "cover.tex"
 \maketitle
 
-%% Inhaltsverzeichnis
 \pagenumbering{Roman}
 \setcounter{page}{0}
+
+%% Inhaltsverzeichnis
 \tableofcontents
+\newpage
 
 %% Abbildungsverzeichnis
 \listoffigures
+\newpage
 
 %% Tabellenverzeichnis
-\listoftables 
+\listoftables
+\newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% HAUPTINHALT%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \pagenumbering{arabic}
 
+%% Kaptiel - Einleitung
+\include{introduction}
 
-%% Zielsetzung
-\include{zielsetzung}
+%% Kapitel - Implementierung
+\include{implementation}
 
+%% Kapitel - Auswertung / Evaluation
+\include{evaluation}
 
 %% LITERATURVERZEICHNIS
 \bibliographystyle{unsrt}

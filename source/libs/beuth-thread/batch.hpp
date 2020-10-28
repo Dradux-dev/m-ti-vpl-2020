@@ -44,6 +44,11 @@ namespace beuth {
          *
          * @param p The process that shall be executed in it's own thread.
          *
+         * @test "Batch/parallel execution" proves that assigned process will
+         *       be executed concurrently, if enough threads are available.
+         * @test "Batch/blocking" proves that the process() function blocks until
+         *       a thread is available for the new process \p p.
+         *
          * @author Tarek Schwarzinger
          */
         inline void process(Process p) {
@@ -58,6 +63,9 @@ namespace beuth {
          * @brief wait
          *
          * Waits for all processes of this batch to finish.
+         *
+         * @test "Batch/wait" proves that the wait() function is blocking until
+         *       all assigned processes have been finished.
          *
          * @author Tarek Schwarzinger
          */
@@ -92,7 +100,7 @@ namespace beuth {
      * @author Tarek Schwarzinger
      */
     template <typename TJob, typename TResult>
-    std::vector<TResult> batch(Threadpool& pool, std::vector<TJob>&& jobs, std::function<TResult(TJob&&)> processor) {
+    static std::vector<TResult> batch(Threadpool& pool, std::vector<TJob>&& jobs, std::function<TResult(TJob&&)> processor) {
       std::mutex resultLock;
       std::vector<TResult> result;
 
@@ -126,7 +134,7 @@ namespace beuth {
      * @author Tarek Schwarzinger
      */
     template <typename TJob>
-    void batch(Threadpool& pool, std::vector<TJob>&& jobs, std::function<void(TJob&&)> processor) {
+    static void batch(Threadpool& pool, std::vector<TJob>&& jobs, std::function<void(TJob&&)> processor) {
       Batch batch(pool);
 
       for(TJob& job : jobs) {

@@ -1,4 +1,6 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    test-math 
+    test-all \
+    test-math \
+    test-thread
