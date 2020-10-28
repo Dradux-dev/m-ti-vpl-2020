@@ -9,7 +9,7 @@
 namespace beuth {
   namespace thread {
     Threadpool::~Threadpool() {
-      forceStop();
+      stop();
 
       for (Thread* thread : threads) {
         delete thread;

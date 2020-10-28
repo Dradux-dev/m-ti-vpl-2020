@@ -2,6 +2,7 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     beuth-ai \
+    beuth-benchmark \
     beuth-math  \
     beuth-profiling \
     beuth-thread \

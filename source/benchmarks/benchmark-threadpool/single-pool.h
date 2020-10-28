@@ -4,11 +4,9 @@
 
 #include "config.h"
 
-class Simd : public beuth::benchmark::Variant<Config>
-{
+class SinglePool : public beuth::benchmark::Variant<Config> {
   public:
-    Simd(const Config& config);
+    SinglePool(const Config& config);
 
     virtual void run() override;
 };
-

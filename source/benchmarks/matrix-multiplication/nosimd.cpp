@@ -26,7 +26,7 @@ void NoSimd::run() {
     std::cout << "Performing benchmark for " << size << "x" << size << " matrix";
     std::cout.flush();
 
-    Measurement measure;
+    beuth::benchmark::Measurement measure;
 
     for (std::size_t test = 1; test <= config.iterations; ++test) {
       if ((config.iterations / 20) == 0 || (test - 1) % (config.iterations / 20) == 0) {
@@ -44,6 +44,6 @@ void NoSimd::run() {
     }
 
     measurements.push_back(std::move(measure));
-    std::cout << MeasurementConverter(measure, 1000) << std::endl;
+    std::cout << beuth::benchmark::MeasurementConverter(measure, 1000) << std::endl;
   }
 }

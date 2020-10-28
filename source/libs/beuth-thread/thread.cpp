@@ -6,8 +6,8 @@ namespace beuth {
   namespace thread {
     Thread::~Thread()
     {
-        if (joinable()) {
-            join();
+        if (thread.joinable()) {
+            thread.join();
         }
     }
 

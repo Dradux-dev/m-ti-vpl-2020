@@ -38,7 +38,7 @@ namespace beuth {
      *
      * @author Tarek Schwarzinger
      */
-    class BEUTHTHREAD_EXPORT Thread : public std::thread
+    class BEUTHTHREAD_EXPORT Thread
     {
       public:
         /**
@@ -133,20 +133,16 @@ namespace beuth {
         inline void waitForProcess();
 
         /**
-         * @brief Wait for startup
+         * @brief start
          *
-         * This function waits until the thread is started.
-         *
-         * @attention This is a blocking call. The parent will get notified as soon as
-         *            the thread is ready for a new task. There is no need for a parent
-         *            to call that function. It is only helpful, if a thread has no parent
-         *            at all - which is not recommended.
+         * Starts the thread. The thread will notify it's parent as soon as it is ready to get a
+         * task assigned.
          *
          * @see signalReady()
          *
          * @author Tarek Schwarzinger
          */
-        inline void waitForStartup();
+        inline void start();
 
         /**
          * @brief Force stop
@@ -295,6 +291,10 @@ namespace beuth {
       private:
         /// Parent of the thread
         Parent* parent = nullptr;
+
+        // Thread itself
+        std::thread thread;
+
         /// Currently assigned task
         Task task = Task();
 
@@ -379,8 +379,7 @@ namespace beuth {
     };
 
     inline Thread::Thread(Parent* parent)
-      : std::thread(&Thread::run,this),
-        parent(parent),
+      : parent(parent),
         shallStop(false),
         running(1),
         taskCount(0),
@@ -404,6 +403,10 @@ namespace beuth {
 
     [[nodiscard]] inline bool Thread::isAvailable() const noexcept {
       return !isBusy() && !isStopped();
+    }
+
+    inline void Thread::start() {
+      thread = std::thread(&Thread::run,this);
     }
 
     inline void Thread::forceStop()
@@ -461,6 +464,12 @@ namespace beuth {
 
     inline void Thread::waitForProcess()
     {
+      // Wait until thread is started
+      running.wait([](std::ptrdiff_t count) -> bool {
+        return count == 0;
+      });
+
+      // Wait until thread is ready for new task
       ready.wait([](std::ptrdiff_t count) -> bool {
         return count > 0;
       });

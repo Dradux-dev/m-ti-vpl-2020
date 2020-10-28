@@ -148,7 +148,7 @@ namespace beuth {
      *
      * @author Tarek Schwarzinger
      */
-    void batch(Threadpool& pool, std::vector<std::function<void()>>&& jobs) {
+    static void batch(Threadpool& pool, std::vector<std::function<void()>>&& jobs) {
       Batch batch(pool);
 
       for(std::function<void()> job : jobs) {

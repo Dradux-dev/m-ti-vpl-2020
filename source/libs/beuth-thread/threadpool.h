@@ -174,6 +174,7 @@ namespace beuth {
 
       for (std::size_t n = 0; n < count; ++n) {
         Thread* thread = new Thread(this);
+        thread->start();
         threads.emplace_back(thread);
       }
     }

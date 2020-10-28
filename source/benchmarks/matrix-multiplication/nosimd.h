@@ -1,9 +1,10 @@
 #pragma once
 
-#include "config.h"
-#include "variant.h"
+#include <variant.hpp>
 
-class NoSimd : public Variant<Config>
+#include "config.h"
+
+class NoSimd : public beuth::benchmark::Variant<Config>
 {
   public:
     NoSimd(const Config& config);
