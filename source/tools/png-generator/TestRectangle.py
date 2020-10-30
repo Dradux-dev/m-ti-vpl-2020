@@ -5,8 +5,7 @@ from classRectangle import Rectangle
 
 width = 255
 height = 255
-objWidth = 40
-objHeight = 40
+objSize = 40
 backColor = 1
 objColor = 0
 
@@ -57,10 +56,10 @@ def generate(fileName,colorMode):
 			
 		img.append(row)
 
-	offsetX = random.randint(0, (width-objWidth))
-	offsetY = random.randint(0, (height-objHeight))
+	offsetX = random.randint(0, (width-objSize))
+	offsetY = random.randint(0, (height-objSize))
 		
-	rec = Rectangle(objWidth,objHeight)
+	rec = Rectangle(objSize)
 	l = rec.generate()
 	
 	for Pixel in l:

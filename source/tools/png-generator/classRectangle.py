@@ -1,10 +1,10 @@
 
 class Rectangle:
 	
-	def __init__(self,objWidth=40,objHeigth=40):
+	def __init__(self,size=40):
 	
-		self.__objWidth = objWidth
-		self.__objHeight = objHeigth
+		self.__objWidth = size
+		self.__objHeight = size
 
 
 	def generate(self):
