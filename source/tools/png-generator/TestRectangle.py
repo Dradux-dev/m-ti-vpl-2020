@@ -2,6 +2,7 @@ import png
 import random
 
 from classRectangle import Rectangle
+from classImage import Image
 
 width = 255
 height = 255
@@ -9,36 +10,6 @@ objSize = 40
 backColor = 1
 objColor = 0
 
-class Image:
-
-	def __init__(self):
-	
-		self.width = 255
-		self.height = 255
-		self.backColor = 1
-		self.colorMode = 'monochrome'
-		self.Pixel = []
-	
-	def fill(self,color):
-		# fill mit color
-		pass
-	
-	def clear(self):
-		# fill mit backColor
-		pass
-	
-	def setPixel(self,x,y,color):
-		# muss egal ob RGB oder ... 
-		pass
-		
-	def save(self,fileName):
-		pass
-		
-	def addForm(self, offset, form, color):
-		# offset soll tubel x,y sein
-		# form ist instanz von reectangle erstmal
-		# color ist int oder rgb tupel
-		pass
 
 
 def generate(fileName,colorMode):	
@@ -94,6 +65,56 @@ def generate(fileName,colorMode):
 	else: 
 		print("colorMode unknown")
 
+
+
+
+# Image Klasse
+rec = Rectangle(objSize)
+
+image = Image(width,height,backColor,'monochrome')
+image.clear()
+
+offsetX = random.randint(0, (width-objSize-1))
+offsetY = random.randint(0, (height-objSize-1))
+offset = (offsetX,offsetY)
+
+image.addForm(offset,rec,0)
+image.save('Rectangle_1.png')
+
+
+
+backColor = 80
+objColor = 150
+rec2 = Rectangle(objSize)
+
+image2 = Image(width,height,backColor,'greyscale')
+image2.clear()
+
+offsetX = random.randint(0, (width-objSize-1))
+offsetY = random.randint(0, (height-objSize-1))
+offset = (offsetX,offsetY)
+
+image2.addForm(offset,rec2,objColor)
+image2.save('Rectangle_2.png')
+
+
+backColor = (255,0,0)
+objColor = (0,255,0)
+rec3 = Rectangle(objSize)
+
+image3 = Image(width,height,backColor,'rgb')
+image3.clear()
+
+offsetX = random.randint(0, (width-objSize-1))
+offsetY = random.randint(0, (height-objSize-1))
+offset = (offsetX,offsetY)
+
+image3.addForm(offset,rec3,objColor)
+image3.save('Rectangle_3.png')
+
+
+# generate funktion
+"""
 generate('Rectangle_1.png','monochrome')
 
 backColor = 80
@@ -105,6 +126,9 @@ backColor = (255,0,0)
 objColor = (0,255,0)
 generate('Rectangle_3.png','rgb')
 
+"""
+
+#alte Rectangle Klasse
 """
 
 rec = Rectangle(width,height,objWidth,objHeight,backColor,objColor,'Rectangle_1.png','monochrome')
