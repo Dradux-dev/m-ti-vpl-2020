@@ -53,7 +53,7 @@ class Image:
 		# muss egal ob RGB oder ... 
 		
 		if ( self.isFilled == 0 ):
-			clear()
+			self.clear()
 			
 		if ( self.checkColor(color) == 1):
 		
