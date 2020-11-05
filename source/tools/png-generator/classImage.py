@@ -102,15 +102,25 @@ class Image:
 		
 			objPixelList = form.generate()
 			
+			boundingBoxColor = self.backColor
+			
 			for Pixel in objPixelList:
+				
+				if( Pixel[2] == 1 ):
+					if(self.colorMode == 'rgb'):
+						pixColor = ( color[0] , color[1] , color[2] )
+						
+					else: 
+						pixColor = color
+				else:
+					if(self.colorMode == 'rgb'):
+						pixColor = ( boundingBoxColor[0] , boundingBoxColor[1] , boundingBoxColor[2] )
+						
+					else: 
+						pixColor = boundingBoxColor
+				
 			
-				if(self.colorMode == 'rgb'):
-					objColor = ( Pixel[2] * color[0] , Pixel[2] * color[1] , Pixel[2] * color[2] )
-					
-				else: 
-					objColor = int( Pixel[2] )* color
-			
-				self.setPixel( Pixel[0] + offset[0] , Pixel[1] + offset[1], objColor )
+				self.setPixel( Pixel[0] + offset[0] , Pixel[1] + offset[1], pixColor )
 				
 		else:
 			print("Form passt nicht ins Bild")
