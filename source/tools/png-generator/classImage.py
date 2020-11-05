@@ -140,7 +140,7 @@ class Image:
 		objHeigth = form.getHeight()
 		
 		
-		if ( offsetX > 0  and  offsetY > 0  and  (offsetX + objWidth) <= self.width  and  (offsetY + objHeigth) <= self.height ):
+		if ( offsetX >= 0  and  offsetY >= 0  and  (offsetX + objWidth) <= self.width  and  (offsetY + objHeigth) <= self.height ):
 			fit = 1
 		
 		return fit

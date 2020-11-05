@@ -6,7 +6,7 @@ from classImage import Image
 
 width = 255
 height = 255
-objSize = 40
+objSize = 80
 backColor = 1
 objColor = 0
 
