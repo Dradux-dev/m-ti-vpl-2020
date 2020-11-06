@@ -13,7 +13,7 @@ class Rectangle:
 		
 		for y in range(self.__objHeight):
 			for x in range(self.__objWidth):
-				objList.append( ( y , x , 1) )
+				objList.append( ( x , y , 1) )
 		
 		return objList
 		
