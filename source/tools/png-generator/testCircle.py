@@ -54,4 +54,3 @@ offset = (offsetX,offsetY)
 
 image3.addForm(offset,circle3,objColor)
 image3.save('Circle_3.png')
-print("Test")

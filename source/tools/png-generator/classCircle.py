@@ -20,9 +20,7 @@ class Circle:
                 distance = math.sqrt(pow(middleY-y, 2) + pow(middleX-x,2))
                 
                 if (distance <= self.__radius):
-                    objList.append((x, y, 1))
-                else:
-                    objList.append((x, y, 0))
+                	objList.append( (x, y, 1 ) )
 
         return objList
 

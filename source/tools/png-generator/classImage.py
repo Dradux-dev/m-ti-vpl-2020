@@ -11,20 +11,23 @@ class Image:
 		self.colorMode = colorMode
 		
 		self.Pixel = []
+		self.clear()
 		self.isFilled = 0
 		
 		if (self.colorMode != 'monochrome' and self.colorMode != 'greyscale' and self.colorMode != 'rgb'):
-			print("colorMode unknown")
+			print("colorMode unknown:" + str(self.colorMode) )
 			sys.exit(1)
 			
 		if ( self.checkColor(self.backColor) == 0 ):
-			print("backColor passt nicht in Farbraum")
+			print("backColor passt nicht in Farbraum" + str(self.backColor) )
 			sys.exit(1)
 	
 	
 	
 	def fill(self,color):
 		# fill mit color
+		
+		self.Pixel = []
 		
 		for y in range(self.height):
 			if(self.colorMode == 'rgb'):
@@ -52,8 +55,9 @@ class Image:
 	def setPixel(self,x,y,color):
 		# muss egal ob RGB oder ... 
 		
-		if ( self.isFilled == 0 ):
-			self.clear()
+		if ( x not in range(self.width)  or  y not in range(self.height) ):
+			print("Pixel not in range")
+			return
 			
 		if ( self.checkColor(color) == 1):
 		
@@ -67,7 +71,7 @@ class Image:
 			else:
 				self.Pixel[y][x] = color
 		else:
-			print("color passt nicht in Farbraum")
+			print("color passt nicht in Farbraum" + str(color) ) 
 		
 	
 		
@@ -98,32 +102,17 @@ class Image:
 		# form ist instanz von reectangle erstmal
 		# color ist int oder rgb tupel
 		
-		if ( self.fitForm(offset, form) == 1 ):
-		
-			objPixelList = form.generate()
+		objPixelList = form.generate()
 			
-			boundingBoxColor = self.backColor
-			
-			for Pixel in objPixelList:
+		for Pixel in objPixelList:
 				
-				if( Pixel[2] == 1 ):
-					if(self.colorMode == 'rgb'):
-						pixColor = ( color[0] , color[1] , color[2] )
+			if(self.colorMode == 'rgb'):
+				pixColor = ( color[0] , color[1] , color[2] )
 						
-					else: 
-						pixColor = color
-				else:
-					if(self.colorMode == 'rgb'):
-						pixColor = ( boundingBoxColor[0] , boundingBoxColor[1] , boundingBoxColor[2] )
-						
-					else: 
-						pixColor = boundingBoxColor
-				
+			else: 
+				pixColor = color				
 			
-				self.setPixel( Pixel[0] + offset[0] , Pixel[1] + offset[1], pixColor )
-				
-		else:
-			print("Form passt nicht ins Bild")
+			self.setPixel( Pixel[0] + offset[0] , Pixel[1] + offset[1], pixColor )
 		
 	
 	
