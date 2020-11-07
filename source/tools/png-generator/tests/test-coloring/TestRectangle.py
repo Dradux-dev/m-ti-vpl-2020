@@ -4,31 +4,32 @@ import math
 
 from classRectangle import Rectangle
 
-width = 255
-height = 255
-objSize = 6
+width = 1920
+height = 1080
+objSize = 600
 backColor = 1
 objColor = 0
 
+
 class Image:
         def __init__(self):
-                self.width = 255
-                self.height = 255
-                self.backColor = 1
-                self.colorMode = 'monochrome'
-                self.Pixel = []
+            self.width = 255
+            self.height = 255
+            self.backColor = 1
+            self.colorMode = 'monochrome'
+            self.Pixel = []
 
         def fill(self,color):
-                # fill mit color
-                pass
+            # fill mit color
+            pass
 
         def clear(self):
-                # fill mit backColor
-                pass
+            # fill mit backColor
+            pass
 
-        def setPixel(self,x,y,color):
-                # muss egal ob RGB oder ...
-                pass
+        def setPixel(self, x, y, color):
+            # muss egal ob RGB oder ...
+            pass
 
         def save(self,fileName):
                 pass
@@ -260,20 +261,24 @@ objColor = 150
 generate('Rectangle_2.png','greyscale', Greyscale(150))
 
 
+
+
+"""
+
 backColor = (255,0,0)
 objColor = (0,255,0)
 generate('Rectangle_3.png','rgb', Rgb((0, 255, 0)))
 
-"""
 backColor = (0,0,0)
-#generate('Rectangle_4.png','rgb', LinearGradient((255, 0, 0), (0, 255, 0), (1,1)))
-#generate('Rectangle_5.png','rgb', RadialGradient((255, 255, 0), (0, 0, 0), (0.5, 0.5), 2))
-#generate('Rectangle_6.png','rgb', RadialGradient((255, 0, 255), (0, 0, 255), (0, 0), 0.75))
-#generate('Rectangle_7.png','rgb', LinearHorizontalGradient((255, 0, 0), (0, 255, 0)))
-#generate('Rectangle_8.png','rgb', LinearVerticalGradient((255, 0, 0), (0, 255, 0)))
-#generate('Rectangle_9.png','rgb', LinearGradient((255, 0, 0), (0, 255, 0), (1, 0.2)))
-#generate('Rectangle_10.png','rgb', LinearGradient((255, 0, 0), (0, 255, 0), (-1, -1)))
+generate('Rectangle_4.png','rgb', LinearGradient((255, 0, 0), (0, 255, 0), (1,1)))
+generate('Rectangle_5.png','rgb', RadialGradient((255, 255, 0), (0, 0, 0), (0.5, 0.5), 2))
+generate('Rectangle_6.png','rgb', RadialGradient((255, 0, 255), (0, 0, 255), (0, 0), 0.75))
+generate('Rectangle_7.png','rgb', LinearHorizontalGradient((255, 0, 0), (0, 255, 0)))
+generate('Rectangle_8.png','rgb', LinearVerticalGradient((255, 0, 0), (0, 255, 0)))
+generate('Rectangle_9.png','rgb', LinearGradient((255, 0, 0), (0, 255, 0), (1, 0.2)))
+generate('Rectangle_10.png','rgb', LinearGradient((255, 0, 0), (0, 255, 0), (-1, -1)))
 
+"""
 def Choose(cond, t, f):
     if cond:
         return t
@@ -318,6 +323,7 @@ for d in directions:
         print("final=", final)
 
     print("=============================================")
+"""
 
 """
 
