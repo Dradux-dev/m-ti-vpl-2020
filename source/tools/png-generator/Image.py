@@ -72,12 +72,20 @@ class Image:
                 w = png.Writer(self.width, self.height, greyscale=False)
                 w.write(f, self.Pixel)
 
-    def addForm(self, offset, form, color):
+    def addForm(self, offset, form, generator):
         objPixelList = form.generate()
 
         """@todo swap color to generator"""
         for Pixel in objPixelList:
-            self.setPixel(Pixel[0] + offset[0], Pixel[1] + offset[1], color)
+            pos = (Pixel[0], Pixel[1])
+            dimension = (form.getWidth, form.getHeight)
+            progress = generator.progress(pos, dimension)
+
+            self.setPixel(
+                x=Pixel[0] + offset[0],
+                y=Pixel[1] + offset[1],
+                color=generator.getPixel(Pixel[2], progress)
+            )
 
     def fitForm(self, offset, form):
         # diese Funktion soll testen, ob eine Form in ein Bild passt

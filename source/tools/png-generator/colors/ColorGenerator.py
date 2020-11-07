@@ -44,7 +44,7 @@ class ColorGenerator:
 
             return tuple(result)
         else:
-            return min[i] + ((max - min) * alpha)
+            return min + ((max - min) * alpha)
 
     @staticmethod
     def scale(value, factor):

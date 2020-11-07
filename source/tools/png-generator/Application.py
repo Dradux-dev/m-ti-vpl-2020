@@ -4,6 +4,7 @@ from pydoc import locate
 
 from Arguments import Arguments
 from Image import Image
+from BoundingBox import  BoundingBox
 
 
 class Application:
@@ -75,17 +76,43 @@ class Application:
 
         return form
 
+    def selectRandomGenerator(self):
+        generator = None
+        found = False
+
+        while not found:
+            pos = random.randint(0, len(self.colors)-1)
+            name = list(self.colors.keys())[pos]
+            generator = self.colors[name]
+            generatorMode = generator.getColorMode()
+            mode = self.args.color_mode
+            found = generatorMode == mode
+
+        return generator
+
     def generate(self):
         # generates every required image and saves it
+        offset = (30, 30)
+        object_size = 200
+
         img = Image()
         form = self.selectRandomForm()
-        img.addForm((30, 30), form, (255, 0, 0))
+        form.setSize(object_size)
+
+        generator = self.selectRandomGenerator()
+        generator.addColor((255, 0, 0))
+        generator.addColor((0, 255, 0))
+
+        boundingBox = BoundingBox(offset, object_size)
+        boundingBox.render(img, (114, 151, 219), (0, 29, 84))
+
+        img.addForm(offset, form, generator)
         img.save("Application.png")
 
-    def run(self):
+    def run(self, arguments=None):
         self.scanColors()
         self.scanForms()
-        self.parseArguments()
+        self.parseArguments(arguments)
         self.generate()
 
     @staticmethod

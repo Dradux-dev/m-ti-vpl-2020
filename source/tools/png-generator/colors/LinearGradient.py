@@ -14,12 +14,12 @@ class LinearGradient(Gradient):
             ColorGenerator.lerp(self, progress[1], self.coordinates[0][1], self.coordinates[1][1])
         )
 
-        avgProgress = ColorGenerator.clamp(((scaledProgress[0] + scaledProgress[1]) / 2), 0, 1)
+        avgProgress = ColorGenerator.clamp(((scaledProgress[0] + scaledProgress[1]) / 2), 0, 1) * self.progressScale
         return self.lerp(avgProgress, self.colors[0], self.colors[1])
 
     def getPixel(self, intensity, progress=(1, 1)):
         # intensity [0;1]
         # progress tuple(horizontal, vertical) für gradient
-        lerpedColor = ColorGenerator.scale(self, self.__getColor(progress), intensity)
+        lerpedColor = ColorGenerator.scale(self.__getColor(progress), intensity)
         return int(lerpedColor[0]), int(lerpedColor[1]), int(lerpedColor[2])
 
