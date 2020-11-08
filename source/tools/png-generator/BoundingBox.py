@@ -1,10 +1,10 @@
+from shapely.geometry import Point, Polygon
+
 from forms.Rectangle import Rectangle
 from DashedBorder import DashedBorder
 from colors.Monochrome import Monochrome
 from colors.Greyscale import Greyscale
 from colors.Rgb import Rgb
-
-from Image import Image
 
 
 class BoundingBox:
@@ -28,17 +28,38 @@ class BoundingBox:
     def setBorderColor(self, color):
         self.borderColor = color
 
-    def getTopLeft(self):
+    @property
+    def topLeft(self):
         return self.position
 
-    def getBottomRight(self):
+    @property
+    def topRight(self):
+        return self.position[0] + self.background.getWidth, self.position[1]
+
+    @property
+    def bottomRight(self):
         return self.position[0] + self.background.getWidth, self.position[1] + self.background.getHeight
 
-    def getWidth(self):
+    @property
+    def bottomLeft(self):
+        return self.position[0], self.position[1] + self.background.getHeight
+
+    @property
+    def width(self):
         return self.background.getWidth
 
-    def getHeight(self):
+    @property
+    def height(self):
         return self.background.getHeight
+
+    @property
+    def polygon(self):
+        return Polygon([
+            self.topLeft,
+            self.topRight,
+            self.bottomRight,
+            self.bottomLeft
+        ])
 
     @staticmethod
     def asGreyscale(color):
@@ -82,3 +103,16 @@ class BoundingBox:
 
         borderGenerator = BoundingBox.convertColor(self.borderColor, image.colorMode)
         image.addForm(self.position, self.border, borderGenerator)
+
+    def isOverlapping(self, other):
+        if not isinstance(other, BoundingBox):
+            raise ValueError(f"Other is not an instance of a bounding box: {other}")
+
+        return Point(other.topLeft).intersects(self.polygon) or \
+            Point(other.topRight).intersects(self.polygon) or \
+            Point(other.bottomLeft).intersects(self.polygon) or \
+            Point(other.bottomRight).intersects(self.polygon) or \
+            Point(self.topLeft).intersects(other.polygon) or \
+            Point(self.topRight).intersects(other.polygon) or \
+            Point(self.bottomLeft).intersects(other.polygon) or \
+            Point(self.bottomRight).intersects(other.polygon)

@@ -2,7 +2,7 @@ from forms.PolygonForm import PolygonForm
 
 
 class DashedBorder(PolygonForm):
-    def __init__(self, size=40, thickness=4, length=10, margin=2):
+    def __init__(self, size=40, thickness=2, length=10, margin=2):
         PolygonForm.__init__(self, size)
         self.__thickness = thickness
         self.__length = length

@@ -9,6 +9,7 @@ class Arguments:
         self.groupGenerator = None
         self.groupForms = None
         self.groupColors = None
+        self.groupTests = None
 
     def setupImage(self):
         self.groupImage = self.parser.add_argument_group(title="Image", description="Image properties")
@@ -66,7 +67,14 @@ class Arguments:
             for name in colors:
                 self.groupColors.add_argument(f"--{name.lower()}-disable", action="store_true", help=f"Disables the {name.lower()} color generator")
 
-    def setup(self, forms=[], colors=[]):
+    def setupTests(self, tests=[]):
+        if len(tests) > 0:
+            self.groupTests = self.parser.add_argument_group(title="Tests", description="Available tests that can be performed")
+
+            for test in tests:
+                self.groupTests.add_argument(f"--test-{test[0]}", action="store_true", help=test[1])
+
+    def setup(self, forms=[], colors=[], tests=[]):
         self.parser.add_argument("--verbose", "-v", action="count", default=0, help="Performs the actions silently")
 
         self.setupImage()
@@ -74,6 +82,7 @@ class Arguments:
         self.setupGenerator()
         self.setupForms(forms)
         self.setupColors(colors)
+        self.setupTests(tests)
 
     def parse(self, arguments=None):
         args = None

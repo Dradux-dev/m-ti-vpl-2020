@@ -4,8 +4,11 @@ import sys
 
 class Image:
     def __init__(self, width=255, height=255, colorMode='rgb', backColor=(0, 0, 0)):
+        # @todo Shouldn't be public... can be public readable via property, but writing should not be allowed
         self.width = width
+        # @todo Shouldn't be public... can be public readable via property, but writing should not be allowed
         self.height = height
+        # @todo Shouldn't be public... can be public readable via property, but writing should not be allowed
         self.colorMode = colorMode
         self.backColor = backColor
 
