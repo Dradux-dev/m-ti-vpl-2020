@@ -12,22 +12,23 @@ class Arguments:
 
     def setupImage(self):
         self.groupImage = self.parser.add_argument_group(title="Image", description="Image properties")
-        self.groupImage.add_argument("--width", type=int, help="The width of the image that shall be created")
-        self.groupImage.add_argument("--height", type=int, help="The height of the image that shall be created")
+        self.groupImage.add_argument("--width", default=255, type=int, help="The width of the image that shall be created")
+        self.groupImage.add_argument("--height", default=255, type=int, help="The height of the image that shall be created")
         self.groupImage.add_argument("--color-mode", type=str, default="rgb", help="The color mode of the generated images. This automatically disables all color generators that does not match the specified color mode. Available color modes are: monochrome, greyscale and rgb")
+        self.groupImage.add_argument("--background-color", type=str, default="0", help="The background color of the image.")
 
     def setupObject(self):
         self.groupObject = self.parser.add_argument_group(title="Objects", description="Object properties")
         self.groupObject.add_argument("--size", type=int,
                                   help="The size of the objects that shall be created This will overwrite --min-size and --max-size and sets the size to a fixed value.")
-        self.groupObject.add_argument("--min-size", type=int, help="The minimum size of an object")
-        self.groupObject.add_argument("--max-size", type=int, help="The maximum size of an object")
+        self.groupObject.add_argument("--min-size", default=20, type=int, help="The minimum size of an object")
+        self.groupObject.add_argument("--max-size", default=60, type=int, help="The maximum size of an object")
 
     def setupGenerator(self):
         self.groupGenerator = self.parser.add_argument_group(title="Generation", description="Image generating properties")
         self.groupGenerator.add_argument("--count", type=int, default=1,
                                help="The count of different images that shall be created")
-        self.groupGenerator.add_argument("--object-count", type=int, default=1,
+        self.groupGenerator.add_argument("--object-count", type=int,
                                help="The count of objects that shall be created in the image")
         self.groupGenerator.add_argument("--min-object-count", type=int, default=1,
                                help="The minimum object count that shall be generated")

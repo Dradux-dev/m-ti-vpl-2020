@@ -3,11 +3,11 @@ import sys
 
 
 class Image:
-    def __init__(self, width=255, height=255, backColor=(0, 0, 0), colorMode='rgb'):
+    def __init__(self, width=255, height=255, colorMode='rgb', backColor=(0, 0, 0)):
         self.width = width
         self.height = height
-        self.backColor = backColor
         self.colorMode = colorMode
+        self.backColor = backColor
 
         self.Pixel = []
         self.clear()

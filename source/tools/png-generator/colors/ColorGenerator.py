@@ -1,7 +1,18 @@
 class ColorGenerator:
     def __init__(self):
         self.colors = []
+        self.__enabled = True
         pass
+
+    def enable(self):
+        self.__enabled = True
+
+    def disable(self):
+        self.__enabled = False
+
+    @property
+    def isEnabled(self):
+        return self.__enabled
 
     def clearColors(self):
         self.colors = []

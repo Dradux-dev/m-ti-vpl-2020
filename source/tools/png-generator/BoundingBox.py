@@ -12,6 +12,8 @@ class BoundingBox:
         self.background = Rectangle(size)
         self.border = DashedBorder(size)
         self.position = position
+        self.backgroundColor = (114, 151, 219)
+        self.borderColor = (0, 29, 84)
 
     def setPosition(self, position):
         self.position = position
@@ -19,6 +21,12 @@ class BoundingBox:
     def setSize(self, size):
         self.background.setSize(size)
         self.border.setSize(size)
+
+    def setBackgroundColor(self, color):
+        self.backgroundColor = color
+
+    def setBorderColor(self, color):
+        self.borderColor = color
 
     def getTopLeft(self):
         return self.position
@@ -68,9 +76,9 @@ class BoundingBox:
 
         return colors[colorMode]
 
-    def render(self, image, backgroundColor, borderColor):
-        backgroundGenerator = BoundingBox.convertColor(backgroundColor, image.colorMode)
+    def render(self, image):
+        backgroundGenerator = BoundingBox.convertColor(self.backgroundColor, image.colorMode)
         image.addForm(self.position, self.background, backgroundGenerator)
 
-        borderGenerator = BoundingBox.convertColor(borderColor, image.colorMode)
+        borderGenerator = BoundingBox.convertColor(self.borderColor, image.colorMode)
         image.addForm(self.position, self.border, borderGenerator)

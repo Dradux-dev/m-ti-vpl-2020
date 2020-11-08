@@ -26,7 +26,7 @@ class Application:
         self.arguments = Arguments()
 
     def parseArguments(self, arguments=None):
-        self.arguments.setup(["rectangle"], self.colors.keys())
+        self.arguments.setup(self.forms.keys(), self.colors.keys())
         self.args = self.arguments.parse(arguments)
 
     def blacklistForm(self, name):
@@ -65,23 +65,28 @@ class Application:
     def generateName(self):
         # generates a filename <YYYY><MM><DD>-<Counter>
         # and returns it
-        pass
+        return f"Application_{self.current}.png"
 
     def selectRandomForm(self):
+        formName = None
         form = None
         found = False
 
+        # @todo Build check, that at least one form is available
+
         while not found:
             pos = random.randint(0, len(self.forms)-1)
-            name = list(self.forms.keys())[pos]
-            form = self.forms[name]
-            found = form.isEnabled()
+            formName = list(self.forms.keys())[pos]
+            form = self.forms[formName]
+            found = form.isEnabled
 
-        return form
+        return formName, form
 
     def selectRandomGenerator(self):
         generator = None
         found = False
+
+        # @todo Build check, that at least one generator is available
 
         while not found:
             pos = random.randint(0, len(self.colors)-1)
@@ -89,34 +94,117 @@ class Application:
             generator = self.colors[name]
             generatorMode = generator.getColorMode()
             mode = self.args.color_mode
-            found = generatorMode == mode
+            found = generatorMode == mode and generator.isEnabled
 
         return generator
 
-    def generate(self):
-        # generates every required image and saves it
-        offset = (30, 30)
-        object_size = 200
+    def parseColor(self, colorStr, source):
+        color = None
 
-        img = Image()
-        form = self.selectRandomForm()
-        form.setSize(object_size)
+        if colorStr is not None:
+            fill = colorStr.split(",")
+            if len(fill) == 1:
+                if self.args.color_mode == "monochrome" and fill[0] == "1":
+                    color = (255, 255, 255)
+                else:
+                    color = (int(fill[0]), int(fill[0]), int(fill[0]))
+            elif len(fill) == 3:
+                color = (int(fill[0]), int(fill[1]), int(fill[2]))
+            else:
+                raise ValueError(f"No rule to handle {len(fill)} color components for {source}")
 
+        return color
+
+    def generateBoundingBox(self, offset, object_size):
+        backgroundColor = self.parseColor(self.args.bounding_box_fill, "--bounding-box-fill")
+        borderColor = self.parseColor(self.args.bounding_box_border, "--bounding-box-border")
+
+        boundingBox = BoundingBox(offset, object_size)
+
+        if backgroundColor is not None:
+            boundingBox.setBackgroundColor(backgroundColor)
+
+        if borderColor is not None:
+            boundingBox.setBorderColor(borderColor)
+
+        return boundingBox
+
+    def generateObjectGenerator(self):
         generator = self.selectRandomGenerator()
         generator.addColor((255, 0, 0))
         generator.addColor((0, 255, 0))
 
-        boundingBox = BoundingBox(offset, object_size)
-        boundingBox.render(img, (114, 151, 219), (0, 29, 84))
+        return generator
 
-        pink = Rgb()
-        pink.addColor((255, 0, 255))
-        pr = PolyRect()
-        img.addForm((0, 0), pr, pink)
+    def generateObject(self, image):
+        object_size = self.args.size
+        if object_size is None:
+            min_size = self.args.min_size
+            max_size = self.args.max_size
+            object_size = random.randint(min_size, max_size)
 
+        offset = (
+            random.randint(self.args.margin, image.width - (self.args.margin + object_size)),
+            random.randint(self.args.margin, image.height - (self.args.margin + object_size))
+        )
 
-        img.addForm(offset, form, generator)
-        img.save("Application.png")
+        formInfo = self.selectRandomForm()
+        formInfo[1].setSize(object_size)
+
+        return offset, formInfo, self.generateObjectGenerator(), self.generateBoundingBox(offset, object_size)
+
+    def generateImage(self):
+        # generates every required image and saves it
+        backgroundColor = self.parseColor(self.args.background_color, "--background-color")
+        image = Image(self.args.width, self.args.height, self.args.color_mode, backgroundColor)
+
+        object_count = self.args.object_count
+        if object_count is None:
+            min_objects = self.args.min_object_count
+            max_objects = self.args.max_object_count
+            object_count = random.randint(min_objects, max_objects)
+
+        for current_object in range(object_count):
+            offset, formInfo, generator, boundingBox = self.generateObject(image)
+            formName = formInfo[0]
+            form = formInfo[1]
+
+            if form.renderBoundingBox:
+                boundingBox.render(image)
+
+            image.addForm(offset, form, generator)
+
+        image.save(self.generateName())
+
+    def prepareGeneration(self):
+        # Convert self.args to dictionary to support [] operator
+        args = vars(self.args)
+
+        # Prepare Forms!
+        for formName in self.forms.keys():
+            form = self.forms[formName]
+
+            if args[f"{formName.lower()}_disable"]:
+                form.disable()
+            else:
+                form.enable()
+
+            form.renderBoundingBox = self.args.render_bounding_box or args[f"{formName.lower()}_bounding_box"]
+
+        # Prepare Generators
+        for generatorName in self.colors.keys():
+            generator = self.colors[generatorName]
+
+            if args[f"{generatorName.lower()}_disable"]:
+                generator.disable()
+            else:
+                generator.enable()
+
+    def generate(self):
+        self.prepareGeneration()
+
+        for self.current in range(self.args.count):
+            self.generateImage()
 
     def run(self, arguments=None):
         self.scanColors()
