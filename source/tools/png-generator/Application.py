@@ -4,7 +4,10 @@ from pydoc import locate
 
 from Arguments import Arguments
 from Image import Image
-from BoundingBox import  BoundingBox
+from BoundingBox import BoundingBox
+from PolyRect import PolyRect
+from colors.Rgb import Rgb
+
 
 
 class Application:
@@ -105,6 +108,12 @@ class Application:
 
         boundingBox = BoundingBox(offset, object_size)
         boundingBox.render(img, (114, 151, 219), (0, 29, 84))
+
+        pink = Rgb()
+        pink.addColor((255, 0, 255))
+        pr = PolyRect()
+        img.addForm((0, 0), pr, pink)
+
 
         img.addForm(offset, form, generator)
         img.save("Application.png")

@@ -50,7 +50,7 @@ class DashedBorder(PolygonForm):
 
         self.__addCorners()
 
-        unitLength = self.__length + self.__margin
+        unitLength = self.__length + self.__margin + 1
 
         # Top Border
         self.__addHorizontalLine(unitLength, self.getWidth-unitLength, 0)

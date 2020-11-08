@@ -21,7 +21,7 @@ class PolygonForm(Form):
         for y in range(self.getHeight):
             for x in range(self.getWidth):
                 p = Point(x, y)
-                inside = [int(p.within(poly)) for poly in polys]
+                inside = [int(p.intersects(poly)) for poly in polys]
 
                 if sum(inside) >= 1:
                     objList.append((x, y, 1))
