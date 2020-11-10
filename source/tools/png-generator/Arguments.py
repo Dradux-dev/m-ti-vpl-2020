@@ -39,6 +39,8 @@ class Arguments:
                                help="Margin that every object needs to keep to the image borders")
         self.groupGenerator.add_argument("--allow-overlapping", action="store_true",
                                help="Allows the bounding boxes of objects to overlap. This can also lead to overlapping objects.")
+        self.groupGenerator.add_argument("--object-color", action="append", default=["fixed,255,0,0", "fixed,0,255,0"],
+                                         help="Possible object color")
         self.groupGenerator.add_argument("--monochrome", type=str, default="0,1",
                                      help="Monochrome color setup. <BackgroundColor>,<ObjectColor> with 0 for black and 1 for white.")
         self.groupGenerator.add_argument("--greyscale", type=str, default="fixed,64/fixed,192/64",
