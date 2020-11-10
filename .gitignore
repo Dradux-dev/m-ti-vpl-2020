@@ -333,3 +333,10 @@ dkms.conf
 
 # End of https://www.toptal.com/developers/gitignore/api/c
 
+/source/tools/png-generator/__pycache__
+/source/tools/png-generator/colors/__pycache__
+/source/tools/png-generator/forms/__pycache__
+/source/tools/png-generator/venv/Lib/site-packages/__pycache__/*.pyc
+/source/tools/png-generator/tests/test-forms/__pycache__
+/source/tools/png-generator/tests/test-coloring/__pycache__
+/source/tools/png-generator/venv

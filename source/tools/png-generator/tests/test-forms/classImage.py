@@ -119,16 +119,15 @@ class Image:
 	def fitForm(self, offset, form):
 		# diese Funktion soll testen, ob eine Form in ein Bild passt
 		# im erfolg soll 1 zurückgegeben werden
-		
-		fit = 0
-		
+
+		fit = 0		
 		offsetX = offset[0]
 		offsetY = offset[1]
 		
 		objWidth = form.getWidth
-        objHeigth = form.getHeight
+		objHeigth = form.getHeight
 
-	if ( offsetX >= 0  and  offsetY >= 0  and  (offsetX + objWidth) <= self.width  and  (offsetY + objHeigth) <= self.height ):
+		if( offsetX >= 0  and  offsetY >= 0  and  (offsetX + objWidth) <= self.width  and  (offsetY + objHeigth) <= self.height ):
 			fit = 1
 		
 		return fit

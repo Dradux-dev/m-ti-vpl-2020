@@ -51,6 +51,10 @@ class BoundingBox:
     @property
     def height(self):
         return self.background.getHeight
+    
+    @property
+    def areaSize(self):
+        return self.background.getHeight * self.background.getWidth
 
     @property
     def polygon(self):
