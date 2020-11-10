@@ -173,6 +173,7 @@ class Application:
         # attention: Object information needs to be sorted in a proper way for the AI to recognized
         #            By size, but if two are overlapping then the later one should have priority
         #            You can use BoundingBox.isOverlapping to test
+        
         pass
 
     def generateImage(self):
