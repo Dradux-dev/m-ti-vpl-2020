@@ -3,9 +3,10 @@ from BoundingBox import BoundingBox
 
 class Meta:
     class Entry:
-        name = "FormName"
-        z = 0
-        boundingBox = BoundingBox()
+        def __init__(self, name, z, boundingBox):
+            self.name = name
+            self.z = z
+            self.boundingBox = boundingBox
 
     def __init__(self):
         self.entries = []

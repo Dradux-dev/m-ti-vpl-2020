@@ -9,6 +9,7 @@ from PolyRect import PolyRect
 from colors.Rgb import Rgb
 from forms.Plus import Plus
 from forms.Cross import Cross
+from Meta import Meta
 
 
 class Application:
@@ -26,6 +27,8 @@ class Application:
         ]
 
         self.tests = {}
+
+        self.metaClass = Meta
 
         self.args = None
         self.arguments = Arguments()
@@ -179,7 +182,7 @@ class Application:
         # generates every required image and saves it
         backgroundColor = self.parseColor(self.args.background_color, "--background-color")
         image = Image(self.args.width, self.args.height, self.args.color_mode, backgroundColor)
-        meta = []
+        meta = self.metaClass()
 
         object_count = self.args.object_count
         if object_count is None:
@@ -198,7 +201,7 @@ class Application:
                 if sum(overlaps) >= 1:
                     continue
 
-            meta.append((formName, boundingBox))
+            meta.addEntry(self.metaClass.Entry(formName, current_object, boundingBox))
 
             if form.renderBoundingBox:
                 boundingBox.render(image)
@@ -208,7 +211,7 @@ class Application:
 
         name = self.generateName()
         image.save(name)
-        self.saveMeta(name, meta)
+        meta.save(name)
 
     def prepareGeneration(self):
         # Convert self.args to dictionary to support [] operator
