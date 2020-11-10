@@ -198,8 +198,7 @@ class Application:
             form = formInfo[1]
 
             if not self.args.allow_overlapping:
-                overlaps = [int(boundingBox.isOverlapping(other[1])) for other in meta]
-                if sum(overlaps) >= 1:
+                if meta.isOverlapping(boundingBox):
                     continue
 
             meta.addEntry(self.metaClass.Entry(formName, current_object, boundingBox))
