@@ -1,5 +1,6 @@
 from BoundingBox import BoundingBox
 import json
+from functools import cmp_to_key
 
 class Meta:
 	class Entry:
@@ -25,26 +26,42 @@ class Meta:
 		}
 
 		# in progress: sort
-		sortedMeta = []
-
-		for part in self.entries:
-			if len(sortedMeta) == 0:
-				# sorted list is empty
-				sortedMeta.append(part)
-			else:
-				for index in range( len(sortedMeta) ):
-					# todo
-					pass
-
-		for obj in sortedMeta:
-			objName = obj[0]
-			objBox = obj[1]
+		sortedMeta = sorted(self.entries, key=cmp_to_key(Meta.compare ) )
+		
+		for entry in sortedMeta:
 			data['forms'].append({
-				'formName': objName,
-				'upper left corner': objBox.topLeft,
-				'width': objBox.width,
-				'height': objBox.height
+				'formName': entry.name,
+				'position': {
+					'x': entry.boundingBox.topLeft[0],
+					'y': entry.boundingBox.topLeft[1]
+				},
+				'width': entry.boundingBox.width,
+				'height': entry.boundingBox.height,
+				'formLayer': entry.z
 			})
 
-			with open(name, 'w') as outfile:
-				json.dump(data, outfile)
+		with open(name, 'w') as outfile:
+			json.dump(data, outfile)
+				
+				
+				
+	@staticmethod
+	def compare(item1, item2 ):
+		if item1.boundingBox.isOverlapping(item2.boundingBox) == True:
+			if item1.z > item2.z:
+				return -1
+			else:
+				return 1
+		else:
+			if item1.boundingBox.areaSize > item2.boundingBox.areaSize:
+				return -1
+			elif item1.boundingBox.areaSize < item2.boundingBox.areaSize:
+				return 1
+			elif item1.z > item2.z:
+				return -1
+			elif item1.z < item2.z:
+				return 1
+			else:
+				return 0
+		
+	
