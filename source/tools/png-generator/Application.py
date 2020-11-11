@@ -12,7 +12,7 @@ from forms.Plus import Plus
 from forms.Cross import Cross
 from Meta import Meta
 from Color import Color
-
+from datetime import datetime
 
 class Application:
     def __init__(self):
@@ -85,7 +85,21 @@ class Application:
     def generateName(self):
         # generates a filename <YYYY><MM><DD>-<Counter>
         # and returns it
-        return f"Application_{self.current}.png"
+        dateTime = datetime.now()
+        timeStr =   (str(dateTime.year) + 
+                    "_" + 
+                    str(dateTime.month) + 
+                    "_" + 
+                    str(dateTime.day) + 
+                    "_" + 
+                    str(dateTime.hour) + 
+                    "_" + 
+                    str(dateTime.minute)) 
+                    #"_" + 
+                    #str(dateTime.second) + 
+                    #"_" + 
+                    #str(dateTime.microsecond))
+        return f"Application_{timeStr}_{self.current}.png"
 
     def selectRandomForm(self):
         formName = None
