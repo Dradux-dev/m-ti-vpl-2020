@@ -86,20 +86,8 @@ class Application:
         # generates a filename <YYYY><MM><DD>-<Counter>
         # and returns it
         dateTime = datetime.now()
-        timeStr =   (str(dateTime.year) + 
-                    "_" + 
-                    str(dateTime.month) + 
-                    "_" + 
-                    str(dateTime.day) + 
-                    "_" + 
-                    str(dateTime.hour) + 
-                    "_" + 
-                    str(dateTime.minute)) 
-                    #"_" + 
-                    #str(dateTime.second) + 
-                    #"_" + 
-                    #str(dateTime.microsecond))
-        return f"Application_{timeStr}_{self.current}.png"
+        timeStr = f"{dateTime.year:04d}{dateTime.month:02d}{dateTime.day:02d}"
+        return f"{timeStr}-{self.current:02d}.png"
 
     def selectRandomForm(self):
         formName = None
