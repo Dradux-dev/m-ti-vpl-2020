@@ -112,6 +112,8 @@ class BoundingBox:
         if not isinstance(other, BoundingBox):
             raise ValueError(f"Other is not an instance of a bounding box: {other}")
 
+        return self.polygon.intersects(other.polygon)
+        """
         return Point(other.topLeft).intersects(self.polygon) or \
             Point(other.topRight).intersects(self.polygon) or \
             Point(other.bottomLeft).intersects(self.polygon) or \
@@ -120,3 +122,4 @@ class BoundingBox:
             Point(self.topRight).intersects(other.polygon) or \
             Point(self.bottomLeft).intersects(other.polygon) or \
             Point(self.bottomRight).intersects(other.polygon)
+        """
