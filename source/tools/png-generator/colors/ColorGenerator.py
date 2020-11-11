@@ -54,6 +54,9 @@ class ColorGenerator:
             return value * factor
 
     def __getColor(self, progress):
+        if len(self.colors) < self.colorsRequired():
+            raise ValueError(f"Only got {len(self.colors)} colors, but requires {self.colorsRequired()} colors")
+
         return self.colors[0]
 
     @staticmethod
@@ -67,3 +70,9 @@ class ColorGenerator:
         # intensity [0;1]
         # progress tuple(horizontal, vertical) für gradient
         return self.scale(self.__getColor(progress), intensity)
+
+    def newForm(self):
+        pass
+
+    def reset(self):
+        self.colors = []

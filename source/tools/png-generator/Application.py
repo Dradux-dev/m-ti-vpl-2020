@@ -1,5 +1,6 @@
 import os
 import random
+import sys
 from pydoc import locate
 
 from Arguments import Arguments
@@ -39,7 +40,7 @@ class Application:
     def parseArguments(self, arguments=None):
         tests = [(name, self.tests[name][1]) for name in self.tests.keys()]
         self.arguments.setup(self.forms.keys(), self.colors.keys(), tests)
-        self.args = self.arguments.parse(arguments)
+        self.args = self.arguments.parse(arguments, self)
 
     def addTest(self, name, fn, description=""):
         if name in self.tests.keys():
@@ -53,7 +54,7 @@ class Application:
 
     def addForm(self, name, form):
         if name not in self.formBlacklist:
-            print(f"Added form {name}")
+            self.info(f"Loaded form {name}")
             self.forms[name] = form()
 
     def scanForms(self):
@@ -70,6 +71,7 @@ class Application:
 
     def addColor(self, name, generator):
         if name not in self.colorBlacklist:
+            self.info(f"Loaded color generator {name}")
             self.colors[name] = generator()
 
     def scanColors(self):
@@ -111,8 +113,6 @@ class Application:
             name = list(self.colors.keys())[pos]
             generator = self.colors[name]
             found = generator.isEnabled
-            if found:
-                print(f"Generator {name} selected")
 
         return generator
 
@@ -142,8 +142,10 @@ class Application:
 
     def generateObjectGenerator(self):
         generator = self.selectRandomGenerator()
-        generator.addColor(Color(255, 0, 0))
-        generator.addColor(Color(0, 255, 0))
+        generator.reset()
+        for color in [Color(255, 0, 0), Color(0, 0, 255), Color(0, 255, 0), Color(255, 0, 255), Color(0, 255, 255)]:
+            self.debug(f"Adding color {color}", self.args.debug_generation)
+            generator.addColor(color)
 
         return generator
 
@@ -154,10 +156,14 @@ class Application:
             max_size = self.args.max_size
             object_size = random.randint(min_size, max_size)
 
+        self.debug(f"Object size is set to {object_size}", self.args.debug_generation)
+
         offset = (
             random.randint(self.args.margin, image.width - (self.args.margin + object_size)),
             random.randint(self.args.margin, image.height - (self.args.margin + object_size))
         )
+
+        self.debug(f"Offset is {offset}", self.args.debug_generation)
 
         formInfo = self.selectRandomForm()
         formInfo[1].setSize(object_size)
@@ -181,22 +187,29 @@ class Application:
         # generates every required image and saves it
         backgroundColor = self.parseColor(self.args.background_color, "--background-color")
         image = Image(self.args.width, self.args.height, self.parseColorMode(), backgroundColor)
+        self.debug(f"Image {image} created", self.args.debug_generation)
+
         meta = self.metaClass()
 
         object_count = self.args.object_count
         if object_count is None:
             min_objects = self.args.min_object_count
             max_objects = self.args.max_object_count
+            self.debug(f"Object count in range({min_objects}, {max_objects})", self.args.debug_generation)
             object_count = random.randint(min_objects, max_objects)
+
+        self.debug(f"Generating {object_count} objects", self.args.debug_generation)
 
         current_object = 0
         while current_object in range(object_count):
             offset, formInfo, generator, boundingBox = self.generateObject(image)
             formName = formInfo[0]
             form = formInfo[1]
+            self.debug(f"Generated {formName} with bounding box {boundingBox}", self.args.debug_generation)
 
             if not self.args.allow_overlapping:
                 if meta.isOverlapping(boundingBox):
+                    self.debug(f"Discarding overlapping form", self.args.debug_generation)
                     continue
 
             meta.addEntry(self.metaClass.Entry(formName, current_object, boundingBox))
@@ -204,8 +217,10 @@ class Application:
             if form.renderBoundingBox:
                 boundingBox.render(image)
 
+            generator.newForm()
             image.addForm(offset, form, generator)
             current_object += 1
+            self.info(f"Object {current_object} of {object_count} generated", self.args.verbose_object)
 
         name = self.generateName()
         image.save(name)
@@ -220,28 +235,37 @@ class Application:
             form = self.forms[formName]
 
             if args[f"{formName.lower()}_disable"]:
+                self.debug(f"Form {formName} disabled", self.args.debug_generation)
                 form.disable()
             else:
+                self.debug(f"Form {formName} enabled", self.args.debug_generation)
                 form.enable()
 
             form.renderBoundingBox = self.args.render_bounding_box or args[f"{formName.lower()}_bounding_box"]
+            if form.renderBoundingBox:
+                self.debug(f"Bounding box for {formName} enabled", self.args.debug_generation)
 
         # Prepare Generators
         for generatorName in self.colors.keys():
             generator = self.colors[generatorName]
 
             if args[f"{generatorName.lower()}_disable"]:
+                self.debug(f"Color generator {generatorName} enabled", self.args.debug_generation)
                 generator.disable()
             else:
+                self.debug(f"Color generator {generatorName} disabled", self.args.debug_generation)
                 generator.enable()
 
     def generate(self):
+        self.info("Preparing image generation")
         self.prepareGeneration()
 
         if self.runTests():
+            self.info("Tests executed")
             return
 
         for self.current in range(self.args.count):
+            self.info(f"Image {self.current+1} of {self.args.count}")
             self.generateImage()
 
     def runTests(self):
@@ -285,6 +309,18 @@ class Application:
     def replaceLast(s, old, new, occurence=1):
         li = s.rsplit(old, occurence)
         return new.join(li)
+
+    def info(self, message, subVerbose=False):
+        if self.args is None or (not self.args.verbose and not subVerbose):
+            print(message)
+
+    def debug(self, message, component=False):
+        if self.args is None or (self.args.debug and component):
+            print(f"[DEBUG] {message}")
+
+    def error(self, message):
+        sys.stderr.write(message + "\n")
+        pass
 
 
 if __name__ == '__main__':

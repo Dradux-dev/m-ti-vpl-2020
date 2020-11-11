@@ -93,3 +93,6 @@ class Image:
                 y=pixel[1] + offset[1],
                 color=generator.getPixel(pixel[2], progress)
             )
+
+    def __str__(self):
+        return f"Image(width: {self.width}, height:{self.height}, colorMode: {Color.ModeString(self.colorMode)})"

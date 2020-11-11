@@ -12,6 +12,9 @@ class RadialGradient(Gradient):
         self.progressScale = progressScale
 
     def __getColor(self, progress):
+        if len(self.colors) < self.colorsRequired():
+            raise ValueError(f"Only got {len(self.colors)} colors, but requires {self.colorsRequired()} colors")
+        
         direction = (
             self.center[0] - progress[0],
             self.center[1] - progress[1]

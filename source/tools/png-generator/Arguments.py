@@ -78,6 +78,12 @@ class Arguments:
 
     def setup(self, forms=[], colors=[], tests=[]):
         self.parser.add_argument("--verbose", "-v", action="count", default=0, help="Performs the actions silently")
+        self.parser.add_argument("--verbose-object", action="store_true",
+                                         help="Disables info messages of the object generation")
+        self.parser.add_argument("--dump-arguments", action="store_true",
+                                 help="Displays all set arguments")
+        self.parser.add_argument("--debug", action="store_true", help="Enables debug output")
+        self.parser.add_argument("--debug-generation", action="store_true", help="Enables image generation debug output")
 
         self.setupImage()
         self.setupObject()
@@ -86,12 +92,18 @@ class Arguments:
         self.setupColors(colors)
         self.setupTests(tests)
 
-    def parse(self, arguments=None):
+    def parse(self, arguments=None, application=None):
         args = None
         if isinstance(arguments, str):
             args = self.parser.parse_args(arguments.split())
         else:
             args = self.parser.parse_args()
 
-        print(args)
+        if args.dump_arguments and application is not None:
+            application.info("Arguments:")
+            argDict = vars(args)
+            for argument in sorted(list(argDict.keys())):
+                value = argDict[argument]
+                application.info(f"  {argument}={value}")
+
         return args

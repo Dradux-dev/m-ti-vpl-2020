@@ -82,3 +82,6 @@ class BoundingBox:
             raise ValueError(f"Other is not an instance of a bounding box: {other}")
 
         return self.polygon.intersects(other.polygon)
+
+    def __str__(self):
+        return f"BoundingBox(position:{self.topLeft}, width:{self.width}, height:{self.height}, size:{self.areaSize})"

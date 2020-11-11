@@ -10,6 +10,9 @@ class LinearGradient(Gradient):
         self.progressScale = progressScale
 
     def __getColor(self, progress):
+        if len(self.colors) < self.colorsRequired():
+            raise ValueError(f"Only got {len(self.colors)} colors, but requires {self.colorsRequired()} colors")
+
         scaledProgress = (
             ColorGenerator.lerp(self, progress[0], self.coordinates[0][0], self.coordinates[1][0]),
             ColorGenerator.lerp(self, progress[1], self.coordinates[0][1], self.coordinates[1][1])
