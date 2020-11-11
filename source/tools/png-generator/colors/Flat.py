@@ -1,10 +1,6 @@
 from colors.ColorGenerator import ColorGenerator
 
 
-class Greyscale(ColorGenerator):
+class Flat(ColorGenerator):
     def __init__(self):
         ColorGenerator.__init__(self)
-
-    @staticmethod
-    def getColorMode():
-        return "greyscale"

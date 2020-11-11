@@ -2,6 +2,7 @@ import math
 
 from colors.Gradient import Gradient
 from colors.ColorGenerator import ColorGenerator
+from Color import Color
 
 
 class RadialGradient(Gradient):
@@ -22,5 +23,4 @@ class RadialGradient(Gradient):
     def getPixel(self, intensity, progress=(1, 1)):
         # intensity [0;1]
         # progress tuple(horizontal, vertical) für gradient
-        lerpedColor = ColorGenerator.scale(self.__getColor(progress), intensity)
-        return int(lerpedColor[0]), int(lerpedColor[1]), int(lerpedColor[2])
+        return ColorGenerator.scale(self.__getColor(progress), intensity)

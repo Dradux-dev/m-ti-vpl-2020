@@ -6,9 +6,5 @@ class Gradient(ColorGenerator):
         ColorGenerator.__init__(self)
 
     @staticmethod
-    def getColorMode():
-        return "rgb"
-
-    @staticmethod
     def colorsRequired():
         return 2

@@ -16,7 +16,7 @@ class Arguments:
         self.groupImage.add_argument("--width", default=255, type=int, help="The width of the image that shall be created")
         self.groupImage.add_argument("--height", default=255, type=int, help="The height of the image that shall be created")
         self.groupImage.add_argument("--color-mode", type=str, default="rgb", help="The color mode of the generated images. This automatically disables all color generators that does not match the specified color mode. Available color modes are: monochrome, greyscale and rgb")
-        self.groupImage.add_argument("--background-color", type=str, default="0", help="The background color of the image.")
+        self.groupImage.add_argument("--background-color", type=str, default="0,0,0", help="The background color of the image.")
 
     def setupObject(self):
         self.groupObject = self.parser.add_argument_group(title="Objects", description="Object properties")

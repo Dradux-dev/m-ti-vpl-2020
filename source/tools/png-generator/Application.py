@@ -6,10 +6,11 @@ from Arguments import Arguments
 from Image import Image
 from BoundingBox import BoundingBox
 from PolyRect import PolyRect
-from colors.Rgb import Rgb
+from colors.Flat import Flat
 from forms.Plus import Plus
 from forms.Cross import Cross
 from Meta import Meta
+from Color import Color
 
 
 class Application:
@@ -109,26 +110,19 @@ class Application:
             pos = random.randint(0, len(self.colors)-1)
             name = list(self.colors.keys())[pos]
             generator = self.colors[name]
-            generatorMode = generator.getColorMode()
-            mode = self.args.color_mode
-            found = generatorMode == mode and generator.isEnabled
+            found = generator.isEnabled
+            if found:
+                print(f"Generator {name} selected")
 
         return generator
 
     def parseColor(self, colorStr, source):
-        color = None
+        if colorStr is None:
+            return None
 
-        if colorStr is not None:
-            fill = colorStr.split(",")
-            if len(fill) == 1:
-                if self.args.color_mode == "monochrome" and fill[0] == "1":
-                    color = (255, 255, 255)
-                else:
-                    color = (int(fill[0]), int(fill[0]), int(fill[0]))
-            elif len(fill) == 3:
-                color = (int(fill[0]), int(fill[1]), int(fill[2]))
-            else:
-                raise ValueError(f"No rule to handle {len(fill)} color components for {source}")
+        color = Color.FromString(colorStr, self.parseColorMode())
+        if color is None:
+            raise ValueError(f"Error in parsing {source}")
 
         return color
 
@@ -148,8 +142,8 @@ class Application:
 
     def generateObjectGenerator(self):
         generator = self.selectRandomGenerator()
-        generator.addColor((255, 0, 0))
-        generator.addColor((0, 255, 0))
+        generator.addColor(Color(255, 0, 0))
+        generator.addColor(Color(0, 255, 0))
 
         return generator
 
@@ -170,19 +164,23 @@ class Application:
 
         return offset, formInfo, self.generateObjectGenerator(), self.generateBoundingBox(offset, object_size)
 
-    def saveMeta(self, name, meta):
-        # name : str -> Name of the image
-        # meta : list<tupe<formName,BoundingBox>> -> Object information
-        # attention: Object information needs to be sorted in a proper way for the AI to recognized
-        #            By size, but if two are overlapping then the later one should have priority
-        #            You can use BoundingBox.isOverlapping to test
-        
-        pass
+    def parseColorMode(self):
+        colorModes = {
+            Color.ModeString(Color.Mode.MONOCHROME): Color.Mode.MONOCHROME,
+            Color.ModeString(Color.Mode.GREYSCALE): Color.Mode.GREYSCALE,
+            Color.ModeString(Color.Mode.RGB): Color.Mode.RGB,
+        }
+
+        colorMode = colorModes[self.args.color_mode]
+        if colorModes is None:
+            raise ValueError(f"Unknown color mode {self.args.color_mode}")
+
+        return colorMode
 
     def generateImage(self):
         # generates every required image and saves it
         backgroundColor = self.parseColor(self.args.background_color, "--background-color")
-        image = Image(self.args.width, self.args.height, self.args.color_mode, backgroundColor)
+        image = Image(self.args.width, self.args.height, self.parseColorMode(), backgroundColor)
         meta = self.metaClass()
 
         object_count = self.args.object_count
@@ -268,7 +266,7 @@ class Application:
 
     def testOverlappingAddObject(self, image, formClass, offset, size, color):
         form = formClass(size)
-        generator = Rgb()
+        generator = Flat()
         generator.addColor(color)
         boundingBox = BoundingBox(offset, size)
         boundingBox.render(image)
@@ -277,8 +275,8 @@ class Application:
 
     def testOverlapping(self):
         image = Image()
-        plus = self.testOverlappingAddObject(image, formClass=Plus, offset=(40, 40), size=60, color=(255, 0, 0))
-        cross = self.testOverlappingAddObject(image, formClass=Cross, offset=(60, 60), size=20, color=(0, 255, 0))
+        plus = self.testOverlappingAddObject(image, formClass=Plus, offset=(40, 40), size=60, color=Color(255, 0, 0))
+        cross = self.testOverlappingAddObject(image, formClass=Cross, offset=(60, 60), size=20, color=Color(0, 255, 0))
         image.save("test-overlapping.png")
 
         print(cross.isOverlapping(plus), plus.isOverlapping(cross))

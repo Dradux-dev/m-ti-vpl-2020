@@ -1,42 +1,44 @@
 import png
 import sys
 
+from Color import Color
+
 
 class Image:
-    def __init__(self, width=255, height=255, colorMode='rgb', backColor=(0, 0, 0)):
-        # @todo Shouldn't be public... can be public readable via property, but writing should not be allowed
-        self.width = width
-        # @todo Shouldn't be public... can be public readable via property, but writing should not be allowed
-        self.height = height
-        # @todo Shouldn't be public... can be public readable via property, but writing should not be allowed
-        self.colorMode = colorMode
+    def __init__(self, width=255, height=255, colorMode=Color.Mode.RGB, backColor=Color(0, 0, 0)):
+        self.__width = width
+        self.__height = height
+        self.__colorMode = colorMode
+
         self.backColor = backColor
 
-        self.Pixel = []
+        self.pixels = []
         self.clear()
 
-        if self.colorMode != 'monochrome' and self.colorMode != 'greyscale' and self.colorMode != 'rgb':
-            print(f"Unknown color mode: {self.colorMode}")
-            sys.exit(1)
+        if self.colorMode not in [Color.Mode.MONOCHROME, Color.Mode.GREYSCALE, Color.Mode.RGB]:
+            raise ValueError(f"Unknown color mode: {self.colorMode}")
 
-        if self.checkColor(self.backColor) == 0:
-            print(f"Background color {self.backColor} does not match color space {self.colorMode}")
-            sys.exit(1)
+    @property
+    def width(self):
+        return self.__width
+
+    @property
+    def height(self):
+        return self.__height
+
+    @property
+    def colorMode(self):
+        return self.__colorMode
 
     def fill(self, color):
-        self.Pixel = []
+        self.pixels = []
 
         for y in range(self.height):
-            if self.colorMode == 'rgb':
-                row = ()
-                for x in range(self.width):
-                    row = row + color
-            else:
-                row = []
-                for x in range(self.width):
-                    row.append(color)
+            row = []
+            for x in range(self.width):
+                row.append(Color.SwapMode(color, self.colorMode))
 
-            self.Pixel.append(row)
+            self.pixels.append(row)
 
     def clear(self):
         self.fill(self.backColor)
@@ -46,75 +48,48 @@ class Image:
             print(f"Pixel ({x}, {y}) is not in range({self.width}, {self.height}).")
             return
 
-        if self.checkColor(color) == 1:
-            if self.colorMode == 'rgb':
-                row = list(self.Pixel[y])
-                xPos = x * 3
-                row[xPos] = color[0]
-                row[xPos + 1] = color[1]
-                row[xPos + 2] = color[2]
-                self.Pixel[y] = tuple(row)
-            else:
-                self.Pixel[y][x] = color
-        else:
-            print(f"Color {color} does not match color space {self.colorMode}")
+        self.pixels[y][x] = Color.SwapMode(color, self.colorMode)
+
+    @staticmethod
+    def __newrow(mode):
+        if mode == Color.Mode.MONOCHROME or mode == Color.Mode.GREYSCALE:
+            return []
+
+        return ()
+
+    @staticmethod
+    def __newpng(width, height, mode):
+        if mode == Color.Mode.MONOCHROME:
+            return png.Writer(width, height, greyscale=True, bitdepth=1)
+        elif mode == Color.Mode.GREYSCALE:
+            return png.Writer(width, height, greyscale=True)
+
+        return png.Writer(width, height, greyscale=False)
 
     def save(self, fileName):
-        if self.colorMode == 'monochrome':
-            with open(fileName, 'wb') as f:
-                w = png.Writer(self.width, self.height, greyscale=True, bitdepth=1)
-                w.write(f, self.Pixel)
+        rawPixels = []
+        for y in range(self.height):
+            row = Image.__newrow(self.colorMode)
 
-        elif self.colorMode == 'greyscale':
-            with open(fileName, 'wb') as f:
-                w = png.Writer(self.width, self.height, greyscale=True)
-                w.write(f, self.Pixel)
+            for x in range(self.width):
+                row = row + self.pixels[y][x].appendValue
 
-        elif self.colorMode == 'rgb':
-            with open(fileName, 'wb') as f:
-                w = png.Writer(self.width, self.height, greyscale=False)
-                w.write(f, self.Pixel)
+            rawPixels.append(row)
+
+        with open(fileName, 'wb') as f:
+            w = Image.__newpng(self.width, self.height, self.colorMode)
+            w.write(f, rawPixels)
 
     def addForm(self, offset, form, generator):
         objPixelList = form.generate()
 
-        """@todo swap color to generator"""
-        for Pixel in objPixelList:
-            pos = (Pixel[0], Pixel[1])
+        for pixel in objPixelList:
+            pos = (pixel[0], pixel[1])
             dimension = (form.getWidth, form.getHeight)
             progress = generator.progress(pos, dimension)
 
             self.setPixel(
-                x=Pixel[0] + offset[0],
-                y=Pixel[1] + offset[1],
-                color=generator.getPixel(Pixel[2], progress)
+                x=pixel[0] + offset[0],
+                y=pixel[1] + offset[1],
+                color=generator.getPixel(pixel[2], progress)
             )
-
-    def fitForm(self, offset, form):
-        # diese Funktion soll testen, ob eine Form in ein Bild passt
-        # im erfolg soll 1 zurückgegeben werden
-
-        offsetX = offset[0]
-        offsetY = offset[1]
-
-        objWidth = form.getWidth
-        objHeight = form.getHeight
-
-        return int(offsetX >= 0 and
-                   offsetY >= 0 and
-                   (offsetX + objWidth) <= self.width and
-                   (offsetY + objHeight) <= self.height)
-
-    def checkColor(self, color):
-        # diese Funktion soll testen, ob die angegeben Farbe in den hinterlegten colorMode passt
-        # im erfolg soll 1 zurückgegeben werden
-        if self.colorMode == 'monochrome':
-            return int(color == 0 or color == 1)
-        elif self.colorMode == 'greyscale':
-            return int(color in range(256))
-        elif self.colorMode == 'rgb':
-            return int(color[0] in range(256) and
-                       color[1] in range(256) and
-                       color[2] in range(256))
-
-        return 0

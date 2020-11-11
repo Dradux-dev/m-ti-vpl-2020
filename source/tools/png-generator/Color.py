@@ -20,14 +20,14 @@ class Color:
 
     def __init__(self, r, g, b, mode=Mode.RGB):
         if isinstance(r, tuple):
-            self.__r = r[0]
-            self.__g = r[1]
-            self.__b = r[2]
+            self.__r = int(max(0, min(255, r[0])))
+            self.__g = int(max(0, min(255, r[1])))
+            self.__b = int(max(0, min(255, r[2])))
             self.__mode = g
         else:
-            self.__r = r
-            self.__g = g
-            self.__b = b
+            self.__r = int(max(0, min(255, r)))
+            self.__g = int(max(0, min(255, g)))
+            self.__b = int(max(0, min(255, b)))
             self.__mode = mode
 
     @property
@@ -58,21 +58,39 @@ class Color:
         return Color.ModeString(self.__mode)
 
     def asGreyscale(self):
-        return int((self.__r + self.__g + self.__b) / 3)
+        # Weighted method or luminosity method
+        return int(0.3 * self.__r + 0.59 * self.__g + 0.11 * self.__b)
+        # Average method
+        # return int((self.__r + self.__g + self.__b) / 3)
 
     def asMonochrome(self):
         return int(self.asGreyscale() >= 128)
 
-    @property
-    def value(self):
-        if self.__mode == Color.Mode.MONOCHROME:
+    def convert(self, mode):
+        if mode == Color.Mode.MONOCHROME:
             return self.asMonochrome()
-        elif self.__mode == Color.Mode.GREYSCALE:
+        elif mode == Color.Mode.GREYSCALE:
             return self.asGreyscale()
-        elif self.__mode == Color.Mode.RGB:
+        elif mode == Color.Mode.RGB:
             return self.__r, self.__g, self.__b
 
-        raise ValueError(f"Invalid color mode {self.__mode} found")
+        raise ValueError(f"Invalid color mode {mode} found")
+
+    @property
+    def value(self):
+        return self.convert(self.__mode)
+
+    @property
+    def appendValue(self):
+        value = self.value
+        if isinstance(value, tuple):
+            return value
+
+        return [value]
+
+    @staticmethod
+    def SwapMode(c, mode):
+        return Color(c.r, c.g, c.b, mode)
 
     @staticmethod
     def ModeString(mode):
@@ -116,14 +134,14 @@ class Color:
             value = max(0, min(int(s), 255))
             return Color(value, value, value, Color.Mode.GREYSCALE)
 
-        elif s.beginswith("fixed,"):
+        elif s.startswith("fixed,"):
             parts = s.split(",")
             if parts[1].isnumeric():
                 value = max(0, min(int(parts[1]), 255))
                 return Color(value, value, value, Color.Mode.GREYSCALE)
             else:
                 raise ValueError(f"Expected second part of {s} to be number between 0 and 255.")
-        elif s.beginswith("random,"):
+        elif s.startswith("random,"):
             parts = s.split(",")
             if len(parts) != 3:
                 raise ValueError(f"Expected 2 arguments for random, but found {len(parts)} in {s}")
@@ -222,11 +240,5 @@ class Color:
         return parser(s)
 
     def __str__(self):
-        return f"{self.modeName}: {self.value}"
+        return f"{self.modeName}: {self.r}, {self.g}, {self.b} -> {self.value}"
 
-
-color = Color.FromString("fixed,0,255,0")
-print(color)
-
-color.mode = Color.Mode.GREYSCALE
-print(color)
