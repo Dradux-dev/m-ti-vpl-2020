@@ -21,7 +21,7 @@ Zusätzlich wird für jedes Trainingsbild eine individuelle .json Datei angelegt
 \newpage
 
 %%%%%%%%%%%%%%%%%%%%%%% Unterpunkt - How to use? %%%%%%%%%%%%%%%%%%%%%%%
-\subsection{How to use?}
+\subsection{Bedienung}
 
 Das Programm kann vollständig über die Kommandozeilenparameter konfiguriert werden. 
 
@@ -30,73 +30,48 @@ Das Programm kann vollständig über die Kommandozeilenparameter konfiguriert we
 %%%%%%%%%%%%%%%%%%%%%%% Unterpunkt - Anpassbarkeit Formen %%%%%%%%%%%%%%
 \subsection{Anpassbarkeit der Formen}
 
-\vspace{0.5cm}
-
 Innerhalb des Projektordners gibt es einen Unterordner "`forms"'. Um eine neue Form hinzuzufügen ist es zunächst notwendig eine neue Datei innerhalb dieses Ordners anzulegen. Der Dateiname muss dabei der beinhaltenden Klasse der Form entsprechen. Jede Form besitzt einen Konstruktor und eine generate() Funktion. Je nach Art der Implementierung gibt es zwei verschiedene Wege eine Form anzulegen. Diese werden im folgenden genauer erläutert. \\
 
-\textbf{Für Formen mittels Polygon-Darstellung:}\\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% EIN POLYGON %%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Für Formen mittels Polygon-Darstellung}
 
 Es gilt dabei zu beachten, dass alle Formen, welche auf Basis von Polygonen erzeugt werden, von der Klasse PolygonForm erben. Ausgenommen von dieser Regel ist beispielsweise die Form Kreis. Innerhalb des Konstruktors der Form ist im Fall von Polygondarstellung auch der Konstruktor der Basisklasse aufzurufen. Wobei dieser die Größe des Objektes bekommt.\\
 
 Die generate() Funktion dient dem Erzeugen des Objektes. Innerhalb der Funktion werden die Eckpunkte des zu erzeugenden Objektes relativ angegeben. Relativ bedeutet, dass die Koordinaten für X und Y sich in einem Bereich von 0 - 1 bewegen. Ein Aufruf von generatePolygon() mit den Koordinaten als Parameter skaliert dann das Objekt in Abhängigkeit von der zu erzeugenden Größe, welche im Konstruktor übergeben wurde. Dabei handelt es sich um Funktionalität der Basisklasse, welche nicht neu implementiert werden muss. \\
 
-Nachfolgenden ist die beispielhafte Implementierung einer solchen Klasse anhand des Beispiels "`Dreieck"' zu sehen:\\
+Nachfolgenden ist die beispielhafte Implementierung einer solchen Klasse anhand des Beispieles \textit{Dreieck} zu sehen:\\
 
-\begin{lstlisting}
-from forms.PolygonForm import PolygonForm
-
-
-class Triangle(PolygonForm):
-    def __init__(self, size=40):
-        PolygonForm.__init__(self, size)
-
-    def generate(self):
-        coords = [(0.5, 0), (0, 1), (1, 1)]
-        return self.generatePolygon(coords)
-
-\end{lstlisting}
+\lstinputlisting[language=Python]{../source/tools/png-generator/forms/Triangle.py}
 
 \newpage
 
-\textbf{Für Formen ohne Polygon-Darstellung:}\\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% MEHRERE POLYGONE %%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Erfolgt die Implementierung einer neuen Form nicht auf Grundlage von Polygonen, so ist eine eigene Implementierung der Funktion generate() notwendig. Ein Beispiel für einen solchen Fall stellt die Klasse "`Kreis"' dar. Die Kreisberechnung erfolgt auf der Grundlage von Abstandberechnungen zum Mittelpunkt mittels Pythagoras. Ist der Abstand eines Pixels auf diesem Weg größer als der Radius des Kreises, befindet sich das Pixel nicht im Kreis. Es folgt die Implementierung der Klasse "`Kreis"': 
+\subsubsection{Erstellung einer Form auf Grundlage mehrerer Polygone}
 
-\begin{lstlisting}
-import math
+\newpage
 
-from forms.Form import Form
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% KEIN POLYGON %%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Für Formen ohne Polygon-Darstellung}
+
+Erfolgt die Implementierung einer neuen Form nicht auf Grundlage von Polygonen, so ist eine eigene Implementierung der Funktion generate() notwendig. Ein Beispiel für einen solchen Fall stellt die Klasse "`Kreis"' dar. Die Kreisberechnung erfolgt auf der Grundlage von Abstandberechnungen zum Mittelpunkt mittels Pythagoras. Ist der Abstand eines Pixels auf diesem Weg größer als der Radius des Kreises, befindet sich das Pixel nicht im Kreis. Es folgt die Implementierung der Klasse "`Kreis"': \\
 
 
-class Circle(Form):
-    def __init__(self, size=40):
-        Form.__init__(self, size)
-        self.__radius = size / 2
-
-    def setSize(self, size):
-        Form.setSize(self, size)
-        self.__radius = size / 2
-
-    def generate(self):
-        objList = []
-
-        middleX = (self.getWidth / 2) - 0.5
-        middleY = (self.getHeight / 2) - 0.5
-
-        for y in range(self.getHeight):
-            for x in range(self.getWidth):
-                distance = math.sqrt(pow(middleY - y, 2) \
-			           + pow(middleX - x, 2))
-
-                if distance <= self.__radius:
-                    objList.append((x, y, 1))
-
-        return objList
-\end{lstlisting}
+\lstinputlisting[language=Python]{../source/tools/png-generator/forms/Circle.py}
 
 \newpage
 
 %%%%%%%%%%%%%%%%%%%%%%% Unterpunkt - Anpassbarkeit Farbgenerierung %%%%%
 \subsection{Anpassbarkeit der Farbgenerierung}
+
+\anno{Dieser Abschnitt wird in einer späteren Fassung ergänzt.}
 
 \newpage
